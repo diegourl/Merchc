@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">Merchc</string>
+
+    <string name="hello_world">Hello world!</string>
+    <string name="action_settings">Settings</string>
+    <string name="title_activity_loading">LoadingActivity</string>
+    <string name="title_activity_island">IslandActivity</string>
+    <string name="title_activity_simulation">SimulationActivity</string>
+</resources>
