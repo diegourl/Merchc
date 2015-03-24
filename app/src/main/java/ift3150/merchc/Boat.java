@@ -18,7 +18,7 @@ public class Boat extends Container{
     private Island currentIsland;
     /*int minCrew;
     Island island;
-    String sType;
+    String sType;asdlfkjlaskdlkjasdf
     float dollars;*/
 
     public Boat(String name, String type){
