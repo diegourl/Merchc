@@ -15,40 +15,37 @@ import java.util.Set;
 
 //@TODO remove provisional saving devices like map and such once db works
 /*
-this class is called by LoadingActivity and is given basic information on objects pulled from the xml which it then instantiates
+this class is called by LoadingActivity (or Loader) and is given basic information on objects pulled from the xml which it then instantiates
 and writes into the db. It needs the filename and containername as these are used as keys to access contained objects. Methods in this class
-do not call each other; they are always called by the LoadingActivity. Hence the need for abstract containterName, as when called the methods
+do not call each other; they are always called by the LoadingActivity. Hence the need for abstract containterName, as when called, the methods
 don't know if the object is on a boat or on an island.
 
 Note that there are two separate inflater objects created by LA: one for the boat and one for the islands.
 */
 public class Inflater {
 
-    Context context;
-    private File file; // not right. or maybe.
-    private String filename = DbHelper.filename;//provisional until we settle on a way to write a save name IF we use several savefiles
+
+    //private File file; // not right. or maybe.
+    private String saveName;// = DbHelper.filename;//provisional until we settle on a way to write a save name IF we use several savefiles
     private String containerName;
     private Map<String,Island> map;
     private Boat boat;
-    private DbHelper dbHelper;
     private SQLiteDatabase db;
 
-    public Inflater(Context context, File file){
-        this.context = context;
-        this.file = file;
+    public Inflater(String saveName){
+        this.saveName = saveName;
         this.map = new HashMap<>();
-        dbHelper = new DbHelper(context);
-        db = dbHelper.getWritableDatabase();
+        db = Globals.dbHelper.getWritableDatabase();
     }
 
     public  void inflateIsland(String name, float x, float y, String industry){
         Island island = new Island(name,x,y,industry);
-        //DbHelper.write(file.getName(), name, x, y, industry);
+        //DbHelper.write(saveName, name, x, y, industry);
 
         //ContentValues is a name-value pair data structure which we then shove into the db
         ContentValues values = new ContentValues();
         values.clear();
-        values.put(DbHelper.C_FILENAME,file.getName());
+        values.put(DbHelper.C_FILENAME,saveName);
         values.put(DbHelper.C_NAME, name);
         values.put(DbHelper.C_X, x);
         values.put(DbHelper.C_Y, y);
@@ -66,7 +63,7 @@ public class Inflater {
         //ContentValues is a name-value pair data structure which we then shove into the db
         ContentValues values = new ContentValues();
         values.clear();
-        values.put(DbHelper.C_FILENAME,file.getName());
+        values.put(DbHelper.C_FILENAME,saveName);
         values.put(DbHelper.C_NAME, boat.getName());
         values.put(DbHelper.C_CURRENTISLAND, starting);
         values.put(DbHelper.C_TYPE, boat.getType());
@@ -83,7 +80,7 @@ public class Inflater {
         //DbHelper.write(
         ContentValues values = new ContentValues();
         values.clear();
-        values.put(DbHelper.C_FILENAME,file.getName());
+        values.put(DbHelper.C_FILENAME,saveName);
         values.put(DbHelper.C_CONTAINER, containerName);
         values.put(DbHelper.C_NAME, passenger.getName());
         values.put(DbHelper.C_WEIGHT, passenger.getWeight());
@@ -91,7 +88,7 @@ public class Inflater {
         values.put(DbHelper.C_TYPE, type);
         values.put(DbHelper.C_DESTINATION, passenger.getDestination());
         values.put(DbHelper.C_FEE, passenger.getFee());
-        values.put(DbHelper.C_DAYSALONG, passenger.getDaysAlong());
+        values.put(DbHelper.C_DAYSLEFT, passenger.getDaysLeft());
         db.insertOrThrow(DbHelper.T_PASSENGERS, null, values);
         //provisional save
         Island island = map.get(containerName);
@@ -106,7 +103,7 @@ public class Inflater {
         //DbHelper.write...
         ContentValues values = new ContentValues();
         values.clear();
-        values.put(DbHelper.C_FILENAME,file.getName());
+        values.put(DbHelper.C_FILENAME,saveName);
         values.put(DbHelper.C_CONTAINER,containerName);
         values.put(DbHelper.C_TYPE, resource.getType());
         values.put(DbHelper.C_AMOUNT, resource.getAmount());
@@ -125,7 +122,7 @@ public class Inflater {
         //DbHelper.write...
         ContentValues values = new ContentValues();
         values.clear();
-        values.put(DbHelper.C_FILENAME,file.getName());
+        values.put(DbHelper.C_FILENAME,saveName);
         values.put(DbHelper.C_CONTAINER,containerName);
         values.put(DbHelper.C_TYPE, equipment.getType());
         values.put(DbHelper.C_AMOUNT, equipment.getAmount());
@@ -143,7 +140,7 @@ public class Inflater {
         //DbHelper.write.....
         ContentValues values = new ContentValues();
         values.clear();
-        values.put(DbHelper.C_FILENAME,file.getName());
+        values.put(DbHelper.C_FILENAME,saveName);
         values.put(DbHelper.C_CONTAINER, containerName);
         values.put(DbHelper.C_NAME, crew.getName());
         values.put(DbHelper.C_WEIGHT, crew.getWeight());

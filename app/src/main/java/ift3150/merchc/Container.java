@@ -41,7 +41,7 @@ public class Container {
     public void addCrew(Crew crew){
         this.crew.add(crew);
     }
-    public void setResource(ArrayList<Resource> resources){
+    public void setResources(ArrayList<Resource> resources){
         this.resources=resources;
     }
     public void addResource(Resource resource){

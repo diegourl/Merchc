@@ -12,8 +12,11 @@ public class Crew extends Cargo {
         super(type);
     }
 
-    public Crew(float weight, float volume,String name){
+    public Crew(String type, float weight, float volume, String name, float upkeep, float salary) {
         super(weight,volume,name);
+        this.upkeep = upkeep;
+        this.salary = salary;
+        this.type = type;
     }
 
     protected void inflate(String type){

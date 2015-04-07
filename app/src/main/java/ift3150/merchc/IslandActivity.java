@@ -1,7 +1,13 @@
 package ift3150.merchc;
 
+import android.app.ListFragment;
+import android.support.v4.app.FragmentManager;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -11,46 +17,31 @@ import android.view.MenuItem;
 import java.util.ArrayList;
 
 
-public class IslandActivity extends ActionBarActivity {
+public class IslandActivity extends FragmentActivity {
     private static final String TAG = "IslandActivity";
+    private static final int NUM_TABS = 4;
     DbHelper dbHelper;
     SQLiteDatabase db;
-    Boat boat;
-    Island island;
     ArrayList<Island> neighbours;
+    ViewPager viewPager;
+    MyPagerAdapter myPagerAdapter;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_island);
-        boat = Globals.boat;
-        Log.d(TAG,"boat: " + boat.name + " " + boat.getType());
-
-        dbHelper = new DbHelper(this);
-        db = dbHelper.getReadableDatabase();
-
-
-
-        String [] columns = {DbHelper.C_CURRENTISLAND};
-        String islandName = "";
-        Cursor c = db.query(DbHelper.T_BOAT,columns,DbHelper.C_NAME + " = '" + boat.getName() + "'",null,null,null,null);
-        if(c != null && c.moveToFirst()) {
-            int isleNameIndex = c.getColumnIndex(DbHelper.C_CURRENTISLAND);
-            islandName = c.getString(isleNameIndex);
-            Log.d(TAG, "dbislandName: " + islandName);
-        }
-
-        /*c = db.query(DbHelper.T_ISLANDS,columns,DbHelper.C_NAME + " = '" + islandName + "'",null,null,null,null);
-        if(c != null && c.moveToFirst()) {
-            int isleNameIndex = c.getColumnIndex(DbHelper.C_CURRENTISLAND);
-            String islandName = c.getString(isleNameIndex);
-            Log.d(TAG, "dbislandName: " + isleName);
-        }*/
-
-
+        Globals.currentIsland.setResources(Globals.loadResources(Globals.currentIsland.getName()));
+        Globals.currentIsland.setEquipment(Globals.loadEquipment(Globals.currentIsland.getName()));
+        Globals.currentIsland.setPassengers(Globals.loadPassengers(Globals.currentIsland.getName()));
+        Globals.currentIsland.setCrew(Globals.loadCrew(Globals.currentIsland.getName()));
+        Log.d(TAG,Globals.currentIsland.getName());
 
 
     }
+
+
+
 
 
 
@@ -74,6 +65,31 @@ public class IslandActivity extends ActionBarActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    private static class MyPagerAdapter extends FragmentPagerAdapter{
+
+
+
+        public MyPagerAdapter(FragmentManager fm){
+            super(fm);
+        }
+
+        @Override
+        public Fragment getItem(int i) {
+            switch(i){
+                default : return null;
+            }
+        }
+
+        @Override
+        public int getCount() {
+            return NUM_TABS;
+        }
+    }
+
+    public static class MyListFragment extends ListFragment{
+
     }
 
 

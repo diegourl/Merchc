@@ -6,15 +6,19 @@ package ift3150.merchc;
 public class Passenger extends Cargo{
     private String destination;
     private int fee;
-    private int daysAlong;
+    private int daysLeft;
 
     public Passenger(String type, String destination){
         super(type);
         this.destination = destination;
     }
 
-    public Passenger(float weight, float volume,String name){
+    public Passenger(String type, float weight, float volume, String name, String destination, int fee, int daysLeft){
         super(weight,volume,name);
+        this.destination = destination;
+        this.fee = fee;
+        this.daysLeft = daysLeft;
+        this.type = type;
     }
 
     //@TODO add passenger types
@@ -29,7 +33,7 @@ public class Passenger extends Cargo{
             case "oldman": {this.weight = 2; this.volume = 1;}
         }
         fee = 10;
-        daysAlong = 0;
+        daysLeft = 0;
         name = NameGenerator.generateName(type);
 
     }
@@ -43,7 +47,7 @@ public class Passenger extends Cargo{
         return fee;
     }
 
-    public int getDaysAlong() {
-        return daysAlong;
+    public int getDaysLeft() {
+        return daysLeft;
     }
 }

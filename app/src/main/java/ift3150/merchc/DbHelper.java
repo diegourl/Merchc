@@ -14,7 +14,7 @@ public class DbHelper extends SQLiteOpenHelper {
     static final String DB_NAME = "gamestate.db";
 
     //increment this every time u alter the db. Can't decrement.
-    static final int DB_VERSION = 6;
+    static final int DB_VERSION = 9;
 
     //meaningless in our case but required
     static final String C_ID  = BaseColumns._ID;
@@ -45,7 +45,7 @@ public class DbHelper extends SQLiteOpenHelper {
     static final String C_VOLUME = "volume";
     static final String C_DESTINATION = "destination";
     static final String C_FEE = "fee";
-    static final String C_DAYSALONG = "daysalong";
+    static final String C_DAYSLEFT = "daysleft";
 
     static final String T_CREW = "crew";
     static final String C_SALARY = "salary";
@@ -69,32 +69,32 @@ public class DbHelper extends SQLiteOpenHelper {
     //IMPORTANT: autoincrement only works with integer, not int, for some reason.
     public void onCreate(SQLiteDatabase db) {
         String sql = "create table " + T_ISLANDS + " (" + C_ID + " integer primary key autoincrement, "
-                + C_FILENAME + " text, " + C_NAME + " text, "  + C_Y + " real, "+ C_X + " real, " + C_INDUSTRY + " text)";
+                + C_FILENAME + " text, " + C_NAME + " text, "  + C_Y + " real, "+ C_X + " real, " + C_INDUSTRY + " text, unique(" + C_FILENAME + " , " + C_NAME + " ) on conflict replace)";
         db.execSQL(sql);
         Log.d(TAG,"onCreated sql: " + sql);
 
         sql = "create table " + T_BOAT + " (" + C_ID + " integer primary key autoincrement, "
-                + C_FILENAME + " text, " + C_NAME + " text, " + C_CURRENTISLAND + " text, " + C_TYPE + " text, " + C_REPAIR + " int)";
+                + C_FILENAME + " text, " + C_NAME + " text, " + C_CURRENTISLAND + " text, " + C_TYPE + " text, " + C_REPAIR + " int, unique(" + C_FILENAME + " , " + C_NAME + " ) on conflict replace)";
         db.execSQL(sql);
         Log.d(TAG,"onCreated sql: " + sql);
 
         sql = "create table " + T_RESOURCES + " (" + C_ID + " integer primary key autoincrement, "
-                + C_FILENAME + " text, " + C_CONTAINER + " text, "+ C_TYPE + " text, " + C_AMOUNT + " int)";
+                + C_FILENAME + " text, " + C_CONTAINER + " text, "+ C_TYPE + " text, " + C_AMOUNT + " int, unique(" + C_FILENAME + " , " + C_CONTAINER + " , " + C_TYPE + " ) on conflict replace)";
         db.execSQL(sql);
         Log.d(TAG,"onCreated sql: " + sql);
 
         sql = "create table " + T_EQUIPMENT + " (" + C_ID + " integer primary key autoincrement, "
-                + C_FILENAME + " text, " + C_CONTAINER + " text, "+ C_TYPE + " text, " + C_AMOUNT + " int)";
+                + C_FILENAME + " text, " + C_CONTAINER + " text, "+ C_TYPE + " text, " + C_AMOUNT + " int, unique(" + C_FILENAME + " , " + C_CONTAINER + " , " + C_TYPE + " ) on conflict replace)";
         db.execSQL(sql);
         Log.d(TAG,"onCreated sql: " + sql);
 
         sql = "create table " + T_PASSENGERS + " (" + C_ID + " integer primary key autoincrement, "
-                + C_FILENAME + " text, " + C_CONTAINER + " text, "+ C_NAME + " text, " + C_WEIGHT + " real, " + C_VOLUME + " real, " + C_TYPE + " text," + C_DESTINATION + " text," + C_FEE + " int," + C_DAYSALONG + " int)";
+                + C_FILENAME + " text, " + C_CONTAINER + " text, "+ C_NAME + " text, " + C_WEIGHT + " real, " + C_VOLUME + " real, " + C_TYPE + " text," + C_DESTINATION + " text," + C_FEE + " int," + C_DAYSLEFT + " int, unique(" + C_FILENAME + " , " + C_CONTAINER + " , " + C_NAME +  " , " + C_TYPE +" ) on conflict replace)";
         db.execSQL(sql);
         Log.d(TAG,"onCreated sql: " + sql);
 
         sql = "create table " + T_CREW + " (" + C_ID + " integer primary key autoincrement, "
-                + C_FILENAME + " text, " + C_CONTAINER + " text, "+ C_NAME + " text, " + C_WEIGHT + " real, " + C_VOLUME + " real, " + C_TYPE + " text," + C_SALARY + " real," + C_UPKEEP + " real)";
+                + C_FILENAME + " text, " + C_CONTAINER + " text, "+ C_NAME + " text, " + C_WEIGHT + " real, " + C_VOLUME + " real, " + C_TYPE + " text," + C_SALARY + " real," + C_UPKEEP + " real, unique(" + C_FILENAME + " , " + C_CONTAINER + " , " + C_NAME +  " , " + C_TYPE +" ) on conflict replace)";
         db.execSQL(sql);
         Log.d(TAG,"onCreated sql: " + sql);
 

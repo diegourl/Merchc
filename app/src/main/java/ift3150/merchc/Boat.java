@@ -27,9 +27,13 @@ public class Boat extends Container{
         inflate();
     }
 
-
-
-
+    public Boat(String name, String type, int repair, Island island){
+        this.name = name;
+        this.type = type;
+        inflate();
+        this.repair = repair;
+        this.currentIsland = island;
+    }
     //@TODO add boat types
     private void inflate(){
         switch(type){
