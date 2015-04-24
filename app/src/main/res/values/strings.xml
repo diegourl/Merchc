@@ -6,4 +6,6 @@
     <string name="title_activity_loading">LoadingActivity</string>
     <string name="title_activity_island">IslandActivity</string>
     <string name="title_activity_simulation">SimulationActivity</string>
+    <string name="title_activity_map">MapActivity</string>
+    <string name="exit_island_info">EXIT</string>
 </resources>

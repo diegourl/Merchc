@@ -14,7 +14,7 @@ public class DbHelper extends SQLiteOpenHelper {
     static final String DB_NAME = "gamestate.db";
 
     //increment this every time u alter the db. Can't decrement.
-    static final int DB_VERSION = 9;
+    static final int DB_VERSION = 12;
 
     //meaningless in our case but required
     static final String C_ID  = BaseColumns._ID;
@@ -51,6 +51,13 @@ public class DbHelper extends SQLiteOpenHelper {
     static final String C_SALARY = "salary";
     static final String C_UPKEEP = "upkeep";
 
+    static final String T_TRAJECTORIES = "trajectories";
+    static final String C_DAYS = "days";
+    static final String C_FROM = "islandFrom";
+    static final String C_TO = "islandTo";
+
+    static final String PRICE = "price"; //not an actual column
+
 
 
     Context context;
@@ -75,6 +82,11 @@ public class DbHelper extends SQLiteOpenHelper {
 
         sql = "create table " + T_BOAT + " (" + C_ID + " integer primary key autoincrement, "
                 + C_FILENAME + " text, " + C_NAME + " text, " + C_CURRENTISLAND + " text, " + C_TYPE + " text, " + C_REPAIR + " int, unique(" + C_FILENAME + " , " + C_NAME + " ) on conflict replace)";
+        db.execSQL(sql);
+        Log.d(TAG,"onCreated sql: " + sql);
+
+        sql = "create table " + T_TRAJECTORIES + " (" + C_ID + " integer primary key autoincrement, "
+                + C_FILENAME + " text, " + C_FROM + " text, " + C_TO + " text, " + C_DAYS + " int, unique(" + C_FILENAME + " , " + C_FROM+ ", " + C_TO +" ) on conflict replace)";
         db.execSQL(sql);
         Log.d(TAG,"onCreated sql: " + sql);
 
@@ -109,6 +121,7 @@ public class DbHelper extends SQLiteOpenHelper {
         db.execSQL("drop table if exists " + T_EQUIPMENT);
         db.execSQL("drop table if exists " + T_PASSENGERS);
         db.execSQL("drop table if exists " + T_CREW);
+        db.execSQL("drop table if exists " + T_TRAJECTORIES);
 
         Log.d(TAG,"onUpdated");
 

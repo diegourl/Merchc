@@ -2,8 +2,10 @@ package ift3150.merchc;
 
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.util.Log;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -12,11 +14,13 @@ import java.util.Map;
 
 //temporary substitute for DB
 public class Globals {
+    private static final String TAG = "Globals";
 
     public static Map<String,Island> map;//to be deprecated
     public static Boat boat;
     public static Island currentIsland;
     public static DbHelper dbHelper;//this is the only DbHelper object u should use
+    public static String saveName;
 
 
 
@@ -173,6 +177,8 @@ public class Globals {
 
     }
 
+
+
     public static ArrayList<Crew> loadCrew(String  containerName) {
         SQLiteDatabase db = Globals.dbHelper.getReadableDatabase();
         String selection = DbHelper.C_CONTAINER + "= '" + containerName + "'";
@@ -209,5 +215,38 @@ public class Globals {
         }
 
     }
+
+    public ArrayList<Map<String,String>> resourceMaps(ArrayList<Resource> boatResources,ArrayList<Resource> islandResources){
+        ArrayList<Map<String,String>> resources = new ArrayList<>();
+        for(Resource r : islandResources){
+            Map<String,String> m = new HashMap<>();
+            m.put(DbHelper.C_TYPE,r.getType());
+            m.put(DbHelper.C_WEIGHT, r.getWeight()+"");
+            m.put(DbHelper.C_VOLUME, r.getVolume()+"");
+            m.put(DbHelper.PRICE, Resource.getPrice(r.getType(),r.getAmount())+"");
+            m.put("island", r.getAmount()+"");
+            for(Resource b : boatResources){
+                if(r.getType().equals(b.getType())){
+                    m.put("boat", b.getAmount()+"");
+                    boatResources.remove(b);
+                    break;
+                }
+            }
+            resources.add(m);
+        }
+        for(Resource r : boatResources){
+            Map<String,String> m = new HashMap<>();
+            m.put(DbHelper.C_TYPE,r.getType());
+            m.put(DbHelper.C_WEIGHT, r.getWeight()+"");
+            m.put(DbHelper.C_VOLUME, r.getVolume()+"");
+            m.put(DbHelper.PRICE, Resource.getPrice(r.getType(),r.getAmount())+"");
+            m.put("island", "0");
+            m.put("boat", r.getAmount()+"");
+            resources.add(m);
+        }
+        return resources;
+    }
+
+
 
 }

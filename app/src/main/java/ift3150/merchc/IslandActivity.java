@@ -1,6 +1,8 @@
 package ift3150.merchc;
 
-import android.app.ListFragment;
+
+import android.content.Intent;
+import android.support.v4.app.ListFragment;
 import android.support.v4.app.FragmentManager;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -13,8 +15,13 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.ListAdapter;
+import android.widget.SimpleAdapter;
 
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 
 public class IslandActivity extends FragmentActivity {
@@ -24,25 +31,35 @@ public class IslandActivity extends FragmentActivity {
     SQLiteDatabase db;
     ArrayList<Island> neighbours;
     ViewPager viewPager;
-    MyPagerAdapter myPagerAdapter;
+    FPAdapter fpAdapter;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_island);
-        Globals.currentIsland.setResources(Globals.loadResources(Globals.currentIsland.getName()));
+        /*Globals.currentIsland.setResources(Globals.loadResources(Globals.currentIsland.getName()));
         Globals.currentIsland.setEquipment(Globals.loadEquipment(Globals.currentIsland.getName()));
         Globals.currentIsland.setPassengers(Globals.loadPassengers(Globals.currentIsland.getName()));
-        Globals.currentIsland.setCrew(Globals.loadCrew(Globals.currentIsland.getName()));
-        Log.d(TAG,Globals.currentIsland.getName());
+        Globals.currentIsland.setCrew(Globals.loadCrew(Globals.currentIsland.getName()));*/
+        Log.d(TAG, "at island : " + Globals.currentIsland.getName());
+        Intent intent = new Intent(this,MapActivity.class);
+        startActivity(intent);
+
+        // ViewPager and its adapters use support library
+        // fragments, so use getSupportFragmentManager.
+        fpAdapter = new FPAdapter(getSupportFragmentManager(),getApplicationContext(),NUM_TABS);
+        viewPager = (ViewPager) findViewById(R.id.pager);
+        viewPager.setAdapter(fpAdapter);
 
 
     }
 
+    protected void onResume() {
+        super.onResume();
 
 
-
+    }
 
 
     @Override
@@ -67,30 +84,6 @@ public class IslandActivity extends FragmentActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    private static class MyPagerAdapter extends FragmentPagerAdapter{
-
-
-
-        public MyPagerAdapter(FragmentManager fm){
-            super(fm);
-        }
-
-        @Override
-        public Fragment getItem(int i) {
-            switch(i){
-                default : return null;
-            }
-        }
-
-        @Override
-        public int getCount() {
-            return NUM_TABS;
-        }
-    }
-
-    public static class MyListFragment extends ListFragment{
-
-    }
-
 
 }
+

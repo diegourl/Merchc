@@ -5,6 +5,7 @@ package ift3150.merchc;
  */
 
 import java.util.ArrayList;
+import java.util.Map;
 
 
 //Extended by Boat and Island
@@ -48,6 +49,30 @@ public class Container {
         this.resources.add(resource);
     }
     public String getName(){return this.name;}
+
+    public  ArrayList<Map<String,String>> getPassengerMaps() {
+        ArrayList<Map<String,String>> passengerMaps = new ArrayList<>();
+        if(passengers == null) return passengerMaps;
+        for(Passenger p : passengers){
+            Map<String,String> m = p.toMap();
+            m.put(DbHelper.C_CONTAINER,this.name);
+            passengerMaps.add(m);
+        }
+
+        return passengerMaps;
+    }
+
+    public  ArrayList<Map<String,String>> getCrewMaps() {
+        ArrayList<Map<String,String>> crewMaps = new ArrayList<>();
+        if(crew == null) return crewMaps;
+        for(Crew c : crew){
+            Map<String,String> m = c.toMap();
+            m.put(DbHelper.C_CONTAINER,this.name);
+            crewMaps.add(m);
+        }
+
+        return crewMaps;
+    }
 
 
 }

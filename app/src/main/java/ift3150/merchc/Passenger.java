@@ -1,5 +1,8 @@
 package ift3150.merchc;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * Created by Diego on 2015-03-11.
  */
@@ -24,13 +27,13 @@ public class Passenger extends Cargo{
     //@TODO add passenger types
     protected void inflate(String type){
         switch (type){
-            case "farmer": {this.weight = 4; this.volume = 2;}
-            case "missionary": {this.weight = 1; this.volume = 1;}
-            case "witch": {this.weight = 2; this.volume = 2;}
-            case "viking": {this.weight = 3; this.volume = 2;}
-            case "tradesperson": {this.weight = 2; this.volume = 2;}
-            case "assassin": {this.weight = 2; this.volume = 2;}
-            case "oldman": {this.weight = 2; this.volume = 1;}
+            case "farmer": this.weight = 4; this.volume = 2;break;
+            case "missionary": this.weight = 1; this.volume = 1;break;
+            case "witch": this.weight = 2; this.volume = 2;break;
+            case "viking": this.weight = 3; this.volume = 2;break;
+            case "tradesperson": this.weight = 2; this.volume = 2;break;
+            case "assassin": this.weight = 2; this.volume = 2;break;
+            case "oldman": this.weight = 2; this.volume = 1;break;
         }
         fee = 10;
         daysLeft = 0;
@@ -49,5 +52,17 @@ public class Passenger extends Cargo{
 
     public int getDaysLeft() {
         return daysLeft;
+    }
+
+    public Map<String,String> toMap(){
+        Map<String,String> m = new HashMap<>();
+        m.put(DbHelper.C_NAME,name);
+        m.put(DbHelper.C_WEIGHT,weight+"");
+        m.put(DbHelper.C_VOLUME,volume+"");
+        m.put(DbHelper.C_TYPE,type);
+        m.put(DbHelper.C_DESTINATION,destination);
+        m.put(DbHelper.C_DAYSLEFT,daysLeft+"");
+        m.put(DbHelper.C_FEE,fee+"");
+        return m;
     }
 }

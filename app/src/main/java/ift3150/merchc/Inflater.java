@@ -3,6 +3,7 @@ package ift3150.merchc;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
+import android.util.Log;
 
 import java.io.File;
 import java.util.HashMap;
@@ -23,6 +24,7 @@ don't know if the object is on a boat or on an island.
 Note that there are two separate inflater objects created by LA: one for the boat and one for the islands.
 */
 public class Inflater {
+    private static final String TAG = "Inflater";
 
 
     //private File file; // not right. or maybe.
@@ -155,6 +157,18 @@ public class Inflater {
             island.addCrew(crew);
         else
             boat.addCrew(crew);
+
+    }
+    //asdlfkjasdlkjasdlfkj
+    //@TODO redo
+    public void inflateTrajectory(int days, String to, String from){
+        ContentValues values = new ContentValues();
+        values.clear();
+        values.put(DbHelper.C_FILENAME,saveName);
+        values.put(DbHelper.C_DAYS, days);
+        values.put(DbHelper.C_FROM, from);
+        values.put(DbHelper.C_TO,to);
+        db.insertOrThrow(DbHelper.T_TRAJECTORIES, null, values);
 
     }
 

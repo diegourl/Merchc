@@ -67,6 +67,8 @@ public class XmlLoader {
             // Starts by looking for the entry tag
             if (name.equals("island")) {
                 readIsland(parser, inflater);
+            }else if(name.equals("trajectory")){
+                readTrajectory(parser, inflater);
             }
         }
         inflater.closeDB();
@@ -146,6 +148,18 @@ public class XmlLoader {
 
         }
 
+
+    }
+
+    private void readTrajectory(XmlPullParser parser, Inflater inflater)throws XmlPullParserException, IOException{
+
+        int days =  Integer.parseInt(parser.getAttributeValue(null, "days"));
+        String to =  parser.getAttributeValue(null, "to");
+        String from =  parser.getAttributeValue(null, "from");
+        Log.d(TAG, "Reading Trajectory : " + days +" "+to + " " + from);
+        inflater.inflateTrajectory(days, to, from);
+        //inflater.inflateIsland(name,Xcoordinate,Ycoordinate,industry);
+        //inflater.setContainerName(name);
 
     }
 

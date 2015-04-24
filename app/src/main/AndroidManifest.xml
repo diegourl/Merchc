@@ -30,6 +30,10 @@
             android:name=".SimulationActivity"
             android:label="@string/title_activity_simulation" >
         </activity>
+        <activity
+            android:name=".MapActivity"
+            android:label="@string/title_activity_map" >
+        </activity>
     </application>
 
 </manifest>

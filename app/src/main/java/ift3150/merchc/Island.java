@@ -1,8 +1,13 @@
 package ift3150.merchc;
 
+import android.util.Log;
+
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 public class Island extends Container {
+    private static final String TAG = "Island";
     ///base////////
     float xCoord;
     float yCoord;
@@ -27,6 +32,8 @@ public class Island extends Container {
     public String getName(){
         return this.name;
     }
+
+
 
 
 

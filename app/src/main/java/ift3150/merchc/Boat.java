@@ -2,6 +2,7 @@ package ift3150.merchc;
 import android.widget.Toast;
 
 import java.util.ArrayList;
+import java.util.Map;
 
 
 public class Boat extends Container{
@@ -79,6 +80,8 @@ public class Boat extends Container{
     public void setCurrentIsland(Island currentIsland) {
         this.currentIsland = currentIsland;
     }
+
+
 
 /*
 
