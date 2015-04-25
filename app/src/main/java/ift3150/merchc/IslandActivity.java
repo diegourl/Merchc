@@ -43,8 +43,8 @@ public class IslandActivity extends FragmentActivity {
         Globals.currentIsland.setPassengers(Globals.loadPassengers(Globals.currentIsland.getName()));
         Globals.currentIsland.setCrew(Globals.loadCrew(Globals.currentIsland.getName()));*/
         Log.d(TAG, "at island : " + Globals.currentIsland.getName());
-        Intent intent = new Intent(this,MapActivity.class);
-        startActivity(intent);
+        /*Intent intent = new Intent(this,MapActivity.class);
+        startActivity(intent);*/
 
         // ViewPager and its adapters use support library
         // fragments, so use getSupportFragmentManager.
