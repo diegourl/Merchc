@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="horizontal" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:weightSum="1"
+    android:background="#00000000">
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/crewImage"
+        android:layout_margin="5dp" />
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="0.96">
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content">
+
+            <LinearLayout
+                android:orientation="vertical"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+
+                <LinearLayout
+                    android:orientation="horizontal"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content">
+
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="type"
+                        android:id="@+id/crewType"
+                        android:layout_margin="5dp"
+                        android:textSize="20sp"
+                        android:textColor="#ffffffff"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="name"
+                        android:id="@+id/crewName"
+                        android:layout_margin="5dp"
+                        android:textSize="20sp"
+                        android:textColor="#ffffffff" />
+
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:orientation="horizontal"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="ukfood"
+                        android:id="@+id/crewUpkeep"
+                        android:layout_margin="5dp"
+                        android:textSize="15sp"
+                        android:textColor="#ffbbbbbb" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="salary$"
+                        android:id="@+id/crewSalary"
+                        android:layout_margin="5dp"
+                        android:textSize="15sp"
+                        android:textColor="#ffbbbbbb" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="hire"
+                android:id="@+id/crewButton"
+                android:clickable="true"
+                android:focusable="false"
+                android:background="@drawable/rectangular_button_background"
+                android:textAllCaps="false"
+                android:layout_gravity="center_vertical" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content" >
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="w kg"
+                android:id="@+id/crewWeight"
+                android:layout_margin="5dp"
+                android:textSize="15sp"
+                android:textColor="#ff777777" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="v l"
+                android:id="@+id/crewVolume"
+                android:layout_margin="5dp"
+                android:textSize="15sp"
+                android:textColor="#ff777777" />
+        </LinearLayout>
+
+    </LinearLayout>
+
+
+
+</LinearLayout>

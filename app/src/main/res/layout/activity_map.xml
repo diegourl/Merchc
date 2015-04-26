@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical" >
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="fill_parent">
+        <HorizontalScrollView
+            android:layout_width="match_parent"
+            android:layout_height="fill_parent" >
+            <FrameLayout
+                android:id="@+id/frameLayout_annotate"
+                android:layout_width="fill_parent"
+                android:layout_height="match_parent" >
+                <RelativeLayout
+                    android:id="@+id/linearLayout_gridtableLayout"
+                    android:layout_width="1000dp"
+                    android:layout_height="2000dp"
+                    android:orientation="horizontal" >
+                </RelativeLayout>
+                <ImageView
+                    android:id="@+id/navigmaske"
+                    android:background="#0000"
+                    android:src="@drawable/clear_arrow"
+                    android:scaleType="fitXY"
+                    android:layout_alignTop="@id/linearLayout_gridtableLayout"
+                    android:layout_alignBottom="@id/linearLayout_gridtableLayout"
+                    android:layout_width="100dp"
+                    android:layout_height="100dp"
+                    />
+            </FrameLayout>
+        </HorizontalScrollView>
+    </ScrollView>
+</LinearLayout>

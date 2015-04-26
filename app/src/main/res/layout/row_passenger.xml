@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="horizontal" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:weightSum="1">
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/passengerImage"
+        android:layout_margin="5dp" />
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1">
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent">
+
+            <LinearLayout
+                android:orientation="vertical"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+
+                <LinearLayout
+                    android:orientation="horizontal"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="type"
+                        android:id="@+id/passengerType"
+                        android:layout_margin="5dp"
+                        android:textSize="20sp"
+                        android:textColor="#ffffffff"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="name"
+                        android:id="@+id/passengerName"
+                        android:layout_margin="5dp"
+                        android:textSize="20sp"
+                        android:textColor="#ffffffff" />
+
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:orientation="horizontal"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="destination"
+                        android:id="@+id/passengerDestination"
+                        android:layout_margin="5dp"
+                        android:textSize="15sp"
+                        android:textColor="#ffbbbbbb" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="fee$"
+                        android:id="@+id/passengerFee"
+                        android:layout_margin="5dp"
+                        android:textSize="15sp"
+                        android:textColor="#ffbbbbbb"
+                        android:textStyle="bold" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="board"
+                android:id="@+id/passengerButton"
+                android:clickable="true"
+                android:focusable="false"
+                android:textColor="#ffffff"
+                android:background="@drawable/rectangular_button_background"
+                android:textAllCaps="false"
+                android:layout_gravity="center_vertical|right" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content" >
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="w kg"
+                android:id="@+id/passengerWeight"
+                android:layout_margin="5dp"
+                android:textSize="15sp"
+                android:textColor="#ff777777" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="v l"
+                android:id="@+id/passengerVolume"
+                android:layout_margin="5dp"
+                android:textSize="15sp"
+                android:textColor="#ff777777" />
+        </LinearLayout>
+
+    </LinearLayout>
+
+</LinearLayout>

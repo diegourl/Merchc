@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/resourceImage"
+                android:layout_margin="5dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="type"
+                android:id="@+id/resourceType"
+                android:layout_margin="5dp"
+                android:textSize="20sp"
+                android:textColor="#ffffffff"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="w kg"
+                android:id="@+id/resourceWeight"
+                android:layout_margin="5dp"
+                android:textSize="15sp"
+                android:textColor="#777777" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="v l"
+                android:id="@+id/resourceVolume"
+                android:layout_margin="5dp"
+                android:textSize="15sp"
+                android:textColor="#777777" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="price$"
+                android:id="@+id/resourcePrice"
+                android:layout_margin="5dp"
+                android:textSize="20sp"
+                android:textColor="#ffffffff"/>
+
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content">
+
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="+"
+                android:id="@+id/resourceBAddToBoat"
+                android:textStyle="bold"
+                android:textColor="#ffffffff"
+                android:background="@drawable/rectangular_button_background"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="onboat"
+                android:id="@+id/resourceBoatAmount"
+                android:layout_margin="5dp"
+                android:textSize="15sp"
+                android:textColor="#ffffffff"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text=":"
+                android:id="@+id/resourceAmountSeparator"
+                android:layout_margin="5dp"
+                android:textSize="15sp"
+                android:textColor="#ffbbbbbb"/>
+
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="onisland"
+                android:id="@+id/resourceIslandAmount"
+                android:layout_margin="5dp"
+                android:textSize="15sp"
+                android:textColor="#ffffffff" />
+
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="-"
+                android:id="@+id/resourceBAddToIsland"
+                android:textColor="#ffffffff"
+                android:background="@drawable/rectangular_button_background"/>
+        </LinearLayout>
+
+
+</LinearLayout>
