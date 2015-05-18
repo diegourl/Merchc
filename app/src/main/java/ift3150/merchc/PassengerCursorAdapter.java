@@ -1,7 +1,10 @@
 package ift3150.merchc;
 
+import android.app.Activity;
+import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -9,6 +12,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
+import android.widget.Toast;
 
 /**
  * Created by Diego on 2015-04-23.
@@ -24,10 +28,12 @@ public class PassengerCursorAdapter extends SimpleCursorAdapter implements View.
     static final String TAG = "PassengerCursorAdapter";
 
     LayoutInflater inflater;
+    Context context;
 
     public PassengerCursorAdapter(Context context, int layout, Cursor c, String[] from, int[] to, int flags) {
         super(context, layout, c, from, to, flags);
         inflater = (LayoutInflater)context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        this.context = context;
     }
 
     @Override
@@ -54,22 +60,35 @@ public class PassengerCursorAdapter extends SimpleCursorAdapter implements View.
         
         //set views
         columnIndex = cursor.getColumnIndex(DbHelper.C_TYPE);
-        tvType.setText(cursor.getString(columnIndex));
+        String type = cursor.getString(columnIndex);
+        tvType.setText(type);
         columnIndex = cursor.getColumnIndex(DbHelper.C_NAME);
-        tvName.setText(cursor.getString(columnIndex));
+        String name = cursor.getString(columnIndex);
+        tvName.setText(name);
         columnIndex = cursor.getColumnIndex(DbHelper.C_DESTINATION);
-        tvDestination.setText(cursor.getString(columnIndex));
+        String destination = cursor.getString(columnIndex);
+        tvDestination.setText(destination);
         columnIndex = cursor.getColumnIndex(DbHelper.C_FEE);
-        tvFee.setText(cursor.getInt(columnIndex)+" $");
+        int fee = cursor.getInt(columnIndex);
+        tvFee.setText(fee+" $");
+        columnIndex = cursor.getColumnIndex(DbHelper.C_DAYSLEFT);
+        int daysLeft = cursor.getInt(columnIndex);
+        //set daysLeft
         columnIndex = cursor.getColumnIndex(DbHelper.C_WEIGHT);
-        tvWeight.setText(cursor.getFloat(columnIndex)+" kg");
+        int weight = cursor.getInt(columnIndex);
+        tvWeight.setText(weight+" kg");
         columnIndex = cursor.getColumnIndex(DbHelper.C_VOLUME);
-        tvVolume.setText(cursor.getFloat(columnIndex)+" m3");
+        int volume = cursor.getInt(columnIndex);
+        tvVolume.setText(volume+" m3");
+
+        Passenger p = new Passenger(type,weight,volume,name,destination,fee,daysLeft);
         
         //button
         columnIndex = cursor.getColumnIndex(DbHelper.C_CONTAINER);
-        boolean onBoat = Globals.boat.getName().equals(cursor.getString(columnIndex));
-        if(!onBoat){
+        String container = cursor.getString(columnIndex);
+        passengerButton.setTag(R.id.passengerName, p);
+        passengerButton.setTag(R.id.passengerButton, container);
+        if(!Globals.boat.getName().equals(container)){
             passengerButton.setText(BOARD_BUTTON_TEXT);
             //passengerButton.setBackgroundColor(BOARD_BUTTON_COLOR);
             //row.setBackgroundColor(BOARD_ROW_BACKGROUND);
@@ -89,6 +108,56 @@ public class PassengerCursorAdapter extends SimpleCursorAdapter implements View.
 
     @Override
     public void onClick(View v) {
+        Button b = (Button) v;
+        SQLiteDatabase db = Globals.dbHelper.getWritableDatabase();
+        switch(b.getId()){
+            case R.id.passengerButton :
+                Passenger p = (Passenger) b.getTag(R.id.passengerName);
+                String container = (String) b.getTag(R.id.passengerButton);
+                ContentValues values = new ContentValues();
+                String selection = DbHelper.C_FILENAME + " = ? and "+DbHelper.C_NAME+" = ? and "+DbHelper.C_TYPE+" = ?";
+                String [] selectArgs = new String[]{Globals.saveName,p.getName(),p.getType()};
+                if(container.equals(Globals.boat.getName())){
+                    values.put(DbHelper.C_CONTAINER,Globals.boat.getCurrentIsland().getName());
+                    Globals.boat.addWeight(-p.getWeight());
+                    Globals.boat.addVolume(-p.getVolume());
+                    Globals.boat.addMoney(-p.getFee()); //@TODO upgrade this
+                    /*b.setTag(R.id.passengerButton,Globals.boat.getCurrentIsland().getName());
+                    b.setText(BOARD_BUTTON_TEXT);*/
+                }else{
+                    values.put(DbHelper.C_CONTAINER,Globals.boat.getName());
+                    Toast toast;
+                    if((Globals.boat.getTotalWeight()+p.getWeight())>Globals.boat.getMaxWeight()){
+                        toast = Toast.makeText(context, "You're too heavy!", Toast.LENGTH_SHORT);
+                        toast.show();
+                        break;
+                    }
+                    if((Globals.boat.getTotalVolume()+p.getVolume())>Globals.boat.getMaxVolume()){
+                        toast = Toast.makeText(context,"You don't have enough space!" ,Toast.LENGTH_SHORT);
+                        toast.show();
+                        break;
+                    }
+                    /*if((c.getSalary())>Globals.boat.getMoney()){
+                        toast = Toast.makeText(context,"You're out of money!" ,Toast.LENGTH_SHORT);
+                        toast.show();
+                        break;
+                    }*/
+                    Globals.boat.addWeight(p.getWeight());
+                    Globals.boat.addVolume(p.getVolume());
+                    //Globals.boat.addMoney(p.getFee());
+                    /*b.setTag(R.id.passengerButton,Globals.boat.getName());
+                    b.setText(DUMP_BUTTON_TEXT);*/
+                }
+                db.update(DbHelper.T_PASSENGERS,values,selection,selectArgs);
+        }
+        String selection = DbHelper.C_FILENAME + " = ? and ("+DbHelper.C_CONTAINER+ " = ? or "+DbHelper.C_CONTAINER+" = ?)";
+        String [] selectArgs = new String[]{Globals.saveName, Globals.boat.getName(), Globals.boat.getCurrentIsland().getName()};
+        String order = DbHelper.C_CONTAINER+", "+DbHelper.C_TYPE+" "+ (Globals.boat.getName().compareTo(Globals.boat.getCurrentIsland().getName())<0?"ASC":"DESC");
+        changeCursor(db.query(DbHelper.T_PASSENGERS,null,selection,selectArgs,null,null,order));
+        db.close();
+        Log.d(TAG,"new boat stats: "+ Globals.boat.getTotalWeight()+" "+Globals.boat.getTotalVolume()+" "+Globals.boat.getMoney());
+        ((IslandActivity)context).setBoatStats();
+
 
     }
 }

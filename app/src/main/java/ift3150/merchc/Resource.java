@@ -18,7 +18,7 @@ public class Resource extends Cargo {
         this.amount = amount;
     }
 
-    public Resource(float weight, float volume,String name){
+    public Resource(int weight, int volume,String name){
         super(weight,volume,name);
     }
 
@@ -53,7 +53,7 @@ public class Resource extends Cargo {
 
 //refactor into nonstatic
     public static int getPrice(String type, int amount){
-        if(amount == 0) amount = 1;
+        if(amount < 1) amount = 1;
         switch (type){   //keep alphabetic pls.
 
             case "booze" : return 40/amount;
@@ -71,4 +71,13 @@ public class Resource extends Cargo {
 
     }
 
+    public int getFoodValue() {
+        switch(type){
+            case "coconut":
+            case "fish":
+            case "food":
+                return weight*amount;
+            default: return 0;
+        }
+    }
 }

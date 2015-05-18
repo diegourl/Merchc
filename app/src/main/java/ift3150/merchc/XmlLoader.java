@@ -36,8 +36,8 @@ public class XmlLoader {
 
     public boolean load() {        
         try{
-            Globals.map = readMap();
-            Globals.boat = readBoat();
+            readMap();
+            readBoat();
         }catch (IOException e) {
             Log.d(TAG,"ioerror: " + e.getMessage());
             return false;
@@ -50,7 +50,7 @@ public class XmlLoader {
     }
 
 
-    public Map<String,Island> readMap()throws IOException,XmlPullParserException{
+    public void readMap()throws IOException,XmlPullParserException{
 
         Inflater inflater = new Inflater(saveName);
         BufferedReader reader = new BufferedReader(new FileReader(mapFile));
@@ -65,20 +65,43 @@ public class XmlLoader {
             }
             String name = parser.getName();
             // Starts by looking for the entry tag
-            if (name.equals("island")) {
-                readIsland(parser, inflater);
-            }else if(name.equals("trajectory")){
-                readTrajectory(parser, inflater);
+            if (name.equals("archipelago")) {
+                readArchipelago(parser, inflater);
             }
         }
         inflater.closeDB();
-        return inflater.getMap();
+        return;// inflater.getMap();
         //InputStream fos = openFileInput(FILENAME);
         // fos.write(string.getBytes());
         // fos.close();
     }
 
-    public Boat readBoat() throws IOException,XmlPullParserException{
+    public void readArchipelago(XmlPullParser parser, Inflater inflater)throws IOException,XmlPullParserException{
+
+        String name =  parser.getAttributeValue(null,"name");
+        int Xcoordinate =  Integer.parseInt(parser.getAttributeValue(null, "Xcoordinate"));
+        int Ycoordinate =  Integer.parseInt(parser.getAttributeValue(null, "Ycoordinate"));
+        Log.d(TAG, "Reading Archipelago : " + name +" "+Xcoordinate + " " + Ycoordinate);
+        inflater.inflateArchipelago(name,Xcoordinate,Ycoordinate);
+        inflater.setCurrentArchipelago(name);
+        parser.nextTag();
+        String tag = parser.getName();
+        while (!tag.equals("archipelago")){
+            if (parser.getEventType() == XmlPullParser.START_TAG) {
+                if (tag.equals("island")) {
+                    readIsland(parser, inflater);
+                }else if(tag.equals("trajectory")){
+                    readTrajectory(parser, inflater);
+                }
+            }
+
+            parser.nextTag();
+            tag = parser.getName();
+
+        }
+    }
+
+    public void readBoat() throws IOException,XmlPullParserException{
 
         Inflater inflater = new Inflater(saveName);
         BufferedReader reader = new BufferedReader(new FileReader(boatFile));
@@ -91,28 +114,35 @@ public class XmlLoader {
         String name =  parser.getAttributeValue(null,"name");
         String type =  parser.getAttributeValue(null, "class");
         String starting =  parser.getAttributeValue(null, "startingIsland");
+        int money = Integer.parseInt(parser.getAttributeValue(null,"money"));
 
         Log.d(TAG, "Reading Boat : " + name + " " + type);
-        inflater.inflateBoat(name,type, starting);
         inflater.setContainerName(name);
+        inflater.inflateBoat(name,type,starting,money);
         while (parser.next() != XmlPullParser.END_DOCUMENT) {
             if (parser.getEventType() != XmlPullParser.START_TAG) {
                 continue;
             }
             String tag = parser.getName();
             // Starts by looking for the entry tag
-            if (tag.equals("passenger")) {
-                readPassenger(parser, inflater);
-            }else if (tag.equals("resource")) {
-                readResource(parser, inflater);
-            }else if (tag.equals("equipment")) {
-                readEquipment(parser, inflater);
-            }else if (tag.equals("crew")) {
-                readCrew(parser, inflater);
+            switch (tag) {
+                case "passenger":
+                    readPassenger(parser, inflater);
+                    break;
+                case "resource":
+                    readResource(parser, inflater);
+                    break;
+                case "equipment":
+                    readEquipment(parser, inflater);
+                    break;
+                case "crew":
+                    readCrew(parser, inflater);
+                    break;
             }
         }
+        inflater.completeBoatStats(name);
         inflater.closeDB();
-        return inflater.getBoat();
+        return;// inflater.getBoat();
         //InputStream fos = openFileInput(FILENAME);
         // fos.write(string.getBytes());
         // fos.close();
@@ -123,8 +153,8 @@ public class XmlLoader {
     public void readIsland(XmlPullParser parser, Inflater inflater)throws XmlPullParserException, IOException{
 
         String name =  parser.getAttributeValue(null,"name");
-        float Xcoordinate =  Float.parseFloat(parser.getAttributeValue(null, "Xcoordinate"));
-        float Ycoordinate =  Float.parseFloat(parser.getAttributeValue(null, "Ycoordinate"));
+        int Xcoordinate =  Integer.parseInt(parser.getAttributeValue(null, "Xcoordinate"));
+        int Ycoordinate =  Integer.parseInt(parser.getAttributeValue(null, "Ycoordinate"));
         String industry =  parser.getAttributeValue(null, "industry");
         Log.d(TAG, "Reading Island : " + name +" "+Xcoordinate + " " + Ycoordinate + " " + industry);
         inflater.inflateIsland(name,Xcoordinate,Ycoordinate,industry);
@@ -133,14 +163,19 @@ public class XmlLoader {
         String tag = parser.getName();
         while (!tag.equals("island")){
             if (parser.getEventType() == XmlPullParser.START_TAG) {
-                if (tag.equals("passenger")) {
-                    readPassenger(parser, inflater);
-                }else if (tag.equals("resource")) {
-                    readResource(parser, inflater);
-                }else if (tag.equals("equipment")) {
-                    readEquipment(parser, inflater);
-                }else if (tag.equals("crew")) {
-                    readCrew(parser, inflater);
+                switch (tag) {
+                    case "passenger":
+                        readPassenger(parser, inflater);
+                        break;
+                    case "resource":
+                        readResource(parser, inflater);
+                        break;
+                    case "equipment":
+                        readEquipment(parser, inflater);
+                        break;
+                    case "crew":
+                        readCrew(parser, inflater);
+                        break;
                 }
             }
             parser.nextTag();

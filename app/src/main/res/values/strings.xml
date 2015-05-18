@@ -8,4 +8,11 @@
     <string name="title_activity_simulation">SimulationActivity</string>
     <string name="title_activity_map">MapActivity</string>
     <string name="exit_island_info">EXIT</string>
+    <string name="sail_button">SAIL</string>
+    <string name="trajectory_dialog_pre_days">This trajectory is </string>
+    <string name="trajectory_dialog_post_days"> days long</string>
+    <string name="myBoat">the boat</string>
+    <string name="map_dollars">dollars:</string>
+    <string name="map_food">food:</string>
+    <string name="title_activity_bmap">BMapActivity</string>
 </resources>

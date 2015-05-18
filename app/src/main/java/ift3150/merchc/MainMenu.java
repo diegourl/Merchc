@@ -1,5 +1,6 @@
 package ift3150.merchc;
 
+import android.app.Activity;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Environment;
 import android.support.v7.app.ActionBarActivity;
@@ -14,7 +15,7 @@ import android.content.*;
 
 import java.io.File;
 
-public class MainMenu extends ActionBarActivity {
+public class MainMenu extends Activity {
     private static final String TAG = "MainMenu";
     final String startUpBoatFileName = "myboat.xml";
     final String startupMapFileName = "myisland.xml";
@@ -59,8 +60,10 @@ public class MainMenu extends ActionBarActivity {
     }
 
     public void newGame(View view){
+
         Toast toast = Toast.makeText(this,"starting new game..." ,Toast.LENGTH_SHORT);
         toast.show();
+
         SharedPreferences preferences = getPreferences(MODE_PRIVATE);
         boolean firstGame = preferences.getBoolean(FIRSTGAMEFLAG, true);
         if(!firstGame)
@@ -91,17 +94,13 @@ public class MainMenu extends ActionBarActivity {
         toast.show();
         Globals.saveName = saveName; //maybe move this from here i don't know. what do i know?godlaksd;oiasdg;olaksno;adslg;alsdn
         Globals.boat = Globals.loadBoat(saveName);
-        initBoat();
-        Globals.currentIsland = Globals.boat.getCurrentIsland();
+        if(Globals.boat ==null){
+            toast = Toast.makeText(this,"Unable to load boat." ,Toast.LENGTH_SHORT);
+            toast.show();
+            return;
+        }
         Intent intent = new Intent(this, IslandActivity.class);
         startActivity(intent);
-    }
-
-    private static void initBoat(){
-        Globals.boat.setResources(Globals.loadResources(Globals.boat.getName()));
-        Globals.boat.setEquipment(Globals.loadEquipment(Globals.boat.getName()));
-        Globals.boat.setPassengers(Globals.loadPassengers(Globals.boat.getName()));
-        Globals.boat.setCrew(Globals.loadCrew(Globals.boat.getName()));
     }
 
     private void clearDB() {
@@ -117,5 +116,5 @@ public class MainMenu extends ActionBarActivity {
         db.close();
     }
 
-    void blank(View view){}
+
 }

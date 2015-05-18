@@ -7,39 +7,53 @@ import java.util.Map;
 
 public class Boat extends Container{
 
-    private static final int MAXREPAIR = 5;
-    private int speed;
-    private int repair;
-    private float weight;
-    private float volume;
-    private float maxWeight;
-    private float maxVolume;
-    private int minCrew;
+    private static final String TAG = "Boat";
+
+    private static final int MAX_REPAIR = 5;
+
+
     private String type;
+    private float speed;
+    private int repair;
+    private int food;
+    private int totalWeight;
+    private int totalVolume;
+    private int money;
+
     private Island currentIsland;
+
+    private int maxWeight;
+    private int maxVolume;
+    private int minCrew;
     /*int minCrew;
     Island island;
     String sType;asdlfkjlaskdlkjasdf
     float dollars;*/
 
-    public Boat(String name, String type){
+    public Boat(String name, String type, int money){
         this.name = name;
         this.type = type;
+        this.money = money;
         inflate();
     }
 
-    public Boat(String name, String type, int repair, Island island){
+    public Boat(String name, String type, int repair, Island island, int money, int totalWeight, int totalVolume, int food){
         this.name = name;
         this.type = type;
         inflate();
         this.repair = repair;
         this.currentIsland = island;
+        this.money = money;
+        this.totalWeight = totalWeight;
+        this.totalVolume = totalVolume;
+        this.food = food;
     }
+
     //@TODO add boat types
     private void inflate(){
         switch(type){
             case "canoe": {
-                speed=20;
+                speed=3;
                 maxWeight=3;
                 maxVolume=2;
                 minCrew=1;
@@ -47,7 +61,7 @@ public class Boat extends Container{
             }
 
             case "skiff":{
-                speed=40;
+                speed=6;
                 maxWeight=24;
                 maxVolume=16;
                 minCrew=5;
@@ -59,12 +73,15 @@ public class Boat extends Container{
             }
 
         }
-        this.repair = MAXREPAIR;
+        this.repair = MAX_REPAIR;
+        this.totalWeight = 0;
+        this.totalVolume = 0;
         //	addCrew(1, 1);
     }
 
-    public int getBaseSpeed(){ return speed;}
+    public float getBaseSpeed(){ return speed;}
 
+    //@TODO upgrade
     public float getSpeed(){
         return speed;
     }
@@ -79,6 +96,71 @@ public class Boat extends Container{
 
     public void setCurrentIsland(Island currentIsland) {
         this.currentIsland = currentIsland;
+    }
+
+    public int getTotalWeight() {
+        return totalWeight;
+    }
+
+    public void setTotalWeight(int totalWeight) {
+        this.totalWeight = totalWeight;
+    }
+
+    public int getTotalVolume() {
+        return totalVolume;
+    }
+
+    public void setTotalVolume(int totalVolume) {
+        this.totalVolume = totalVolume;
+    }
+
+    public int getMoney() {
+        return money;
+    }
+
+    public void addWeight(int weight){
+        totalWeight += weight;
+    }
+
+    public void addVolume(int volume){
+        totalVolume += volume;
+    }
+
+    public void addMoney(int m) { money += m;     }
+
+    public int getMaxWeight() {
+        return maxWeight;
+    }
+
+    public int getMaxVolume() {
+        return maxVolume;
+    }
+
+    public int getMinCrew() {
+        return minCrew;
+    }
+
+    public void addFood(int foodValue) {
+        food += foodValue;
+    }
+
+    public int getFood() {
+        return food;
+    }
+
+    public void tick(){
+
+    }
+
+    private boolean feedCrew(int days) {
+        while(days-->0){
+
+        }
+        return true;
+    }
+
+    private boolean payCrew(int i) {
+        return true;
     }
 
 

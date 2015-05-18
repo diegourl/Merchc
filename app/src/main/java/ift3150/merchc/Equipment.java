@@ -17,9 +17,10 @@ public class Equipment extends Cargo{
         this.amount = amount;
     }
 
-    public Equipment(float weight, float volume,String name){
+    public Equipment(int weight, int volume,String name){
         super(weight,volume,name);
     }
+
     //@TODO add equipment types
     protected void inflate(String type){
         switch (type){

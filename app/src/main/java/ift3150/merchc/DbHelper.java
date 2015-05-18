@@ -14,7 +14,7 @@ public class DbHelper extends SQLiteOpenHelper {
     static final String DB_NAME = "gamestate.db";
 
     //increment this every time u alter the db. Can't decrement.
-    static final int DB_VERSION = 12;
+    static final int DB_VERSION = 15;
 
     //meaningless in our case but required
     static final String C_ID  = BaseColumns._ID;
@@ -33,6 +33,10 @@ public class DbHelper extends SQLiteOpenHelper {
     static final String C_CURRENTISLAND = "currentIsland";
     static final String C_TYPE = "type";
     static final String C_REPAIR = "repair";
+    static final String C_MONEY = "money";
+    static final String C_TOTAL_WEIGHT = "totalWeight";
+    static final String C_TOTAL_VOLUME = "totalVolume";
+    static final String C_FOOD = "food";
 
     static final String T_RESOURCES = "resources";
     static final String C_CONTAINER = "container";
@@ -58,6 +62,9 @@ public class DbHelper extends SQLiteOpenHelper {
 
     static final String PRICE = "price"; //not an actual column
 
+    static final String T_ARCHIPELAGOS = "archipelagos";
+    static final String C_ARCHIPELAGO = "archipelago";
+
 
 
     Context context;
@@ -75,13 +82,19 @@ public class DbHelper extends SQLiteOpenHelper {
     //don't forget to change the version number. U can only go up from the last number.
     //IMPORTANT: autoincrement only works with integer, not int, for some reason.
     public void onCreate(SQLiteDatabase db) {
-        String sql = "create table " + T_ISLANDS + " (" + C_ID + " integer primary key autoincrement, "
-                + C_FILENAME + " text, " + C_NAME + " text, "  + C_Y + " real, "+ C_X + " real, " + C_INDUSTRY + " text, unique(" + C_FILENAME + " , " + C_NAME + " ) on conflict replace)";
+
+        String sql = "create table " + T_ARCHIPELAGOS + " (" + C_ID + " integer primary key autoincrement, "
+                + C_FILENAME + " text, " + C_NAME + " text, "  + C_Y + " int, "+ C_X + " int, unique(" + C_FILENAME + " , " + C_NAME + " ) on conflict replace)";
+        db.execSQL(sql);
+        Log.d(TAG,"onCreated sql: " + sql);
+
+        sql = "create table " + T_ISLANDS + " (" + C_ID + " integer primary key autoincrement, "
+                + C_FILENAME + " text, " + C_NAME + " text, "  + C_Y + " int, "+ C_X + " int, " + C_INDUSTRY + " text, "+ C_ARCHIPELAGO +" text, unique(" + C_FILENAME + " , " + C_NAME + " ) on conflict replace)";
         db.execSQL(sql);
         Log.d(TAG,"onCreated sql: " + sql);
 
         sql = "create table " + T_BOAT + " (" + C_ID + " integer primary key autoincrement, "
-                + C_FILENAME + " text, " + C_NAME + " text, " + C_CURRENTISLAND + " text, " + C_TYPE + " text, " + C_REPAIR + " int, unique(" + C_FILENAME + " , " + C_NAME + " ) on conflict replace)";
+                + C_FILENAME + " text, " + C_NAME + " text, " + C_CURRENTISLAND + " text, " + C_TYPE + " text, " + C_REPAIR + " int, " + C_MONEY + " int, " + C_TOTAL_WEIGHT + " int, " + C_TOTAL_VOLUME + " int, "+C_FOOD+" int, unique(" + C_FILENAME + " , " + C_NAME + " ) on conflict replace)";
         db.execSQL(sql);
         Log.d(TAG,"onCreated sql: " + sql);
 
@@ -101,12 +114,12 @@ public class DbHelper extends SQLiteOpenHelper {
         Log.d(TAG,"onCreated sql: " + sql);
 
         sql = "create table " + T_PASSENGERS + " (" + C_ID + " integer primary key autoincrement, "
-                + C_FILENAME + " text, " + C_CONTAINER + " text, "+ C_NAME + " text, " + C_WEIGHT + " real, " + C_VOLUME + " real, " + C_TYPE + " text," + C_DESTINATION + " text," + C_FEE + " int," + C_DAYSLEFT + " int, unique(" + C_FILENAME + " , " + C_CONTAINER + " , " + C_NAME +  " , " + C_TYPE +" ) on conflict replace)";
+                + C_FILENAME + " text, " + C_CONTAINER + " text, "+ C_NAME + " text, " + C_WEIGHT + " int, " + C_VOLUME + " int, " + C_TYPE + " text," + C_DESTINATION + " text," + C_FEE + " int," + C_DAYSLEFT + " int, unique(" + C_FILENAME + " , " + C_CONTAINER + " , " + C_NAME +  " , " + C_TYPE +" ) on conflict replace)";
         db.execSQL(sql);
         Log.d(TAG,"onCreated sql: " + sql);
 
         sql = "create table " + T_CREW + " (" + C_ID + " integer primary key autoincrement, "
-                + C_FILENAME + " text, " + C_CONTAINER + " text, "+ C_NAME + " text, " + C_WEIGHT + " real, " + C_VOLUME + " real, " + C_TYPE + " text," + C_SALARY + " real," + C_UPKEEP + " real, unique(" + C_FILENAME + " , " + C_CONTAINER + " , " + C_NAME +  " , " + C_TYPE +" ) on conflict replace)";
+                + C_FILENAME + " text, " + C_CONTAINER + " text, "+ C_NAME + " text, " + C_WEIGHT + " int, " + C_VOLUME + " int, " + C_TYPE + " text," + C_SALARY + " int," + C_UPKEEP + " int, unique(" + C_FILENAME + " , " + C_CONTAINER + " , " + C_NAME +  " , " + C_TYPE +" ) on conflict replace)";
         db.execSQL(sql);
         Log.d(TAG,"onCreated sql: " + sql);
 
@@ -115,6 +128,7 @@ public class DbHelper extends SQLiteOpenHelper {
     @Override
     // @TODO use alter table statements instead of dropping all the tables
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+        db.execSQL("drop table if exists " + T_ARCHIPELAGOS);
         db.execSQL("drop table if exists " + T_ISLANDS);
         db.execSQL("drop table if exists " + T_BOAT);
         db.execSQL("drop table if exists " + T_RESOURCES);

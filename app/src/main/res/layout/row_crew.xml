@@ -89,7 +89,8 @@
                 android:focusable="false"
                 android:background="@drawable/rectangular_button_background"
                 android:textAllCaps="false"
-                android:layout_gravity="center_vertical" />
+                android:layout_gravity="center_vertical"
+                android:textColor="#ffffffff" />
         </LinearLayout>
 
         <LinearLayout

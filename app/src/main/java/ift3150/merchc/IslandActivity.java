@@ -1,6 +1,7 @@
 package ift3150.merchc;
 
 
+import android.app.DialogFragment;
 import android.support.v7.app.ActionBar;
 import android.app.FragmentTransaction;
 import android.content.Intent;
@@ -20,6 +21,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ListAdapter;
 import android.widget.SimpleAdapter;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -44,45 +47,46 @@ public class IslandActivity extends FragmentActivity {
         Globals.currentIsland.setEquipment(Globals.loadEquipment(Globals.currentIsland.getName()));
         Globals.currentIsland.setPassengers(Globals.loadPassengers(Globals.currentIsland.getName()));
         Globals.currentIsland.setCrew(Globals.loadCrew(Globals.currentIsland.getName()));*/
-        Log.d(TAG, "at island : " + Globals.currentIsland.getName());
+        Log.d(TAG, "at island : " + Globals.boat.getCurrentIsland().getName());
         /*Intent intent = new Intent(this,MapActivity.class);
         startActivity(intent);*/
 
         // ViewPager and its adapters use support library
         // fragments, so use getSupportFragmentManager.
-        fpAdapter = new FPAdapter(getSupportFragmentManager(),getApplicationContext(),NUM_TABS);
+        fpAdapter = new FPAdapter(getSupportFragmentManager(),this,NUM_TABS);
         viewPager = (ViewPager) findViewById(R.id.pager);
+        //viewPager.setOffscreenPageLimit(NUM_TABS-1);
         viewPager.setAdapter(fpAdapter);
+        setIslandName();
+        setBoatStats();
 
-        /*final ActionBar actionBar = getSupportActionBar();
-        actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
-        ActionBar.TabListener tabListener = new ActionBar.TabListener(){
+    }
 
+    public void setBoatStats() {
+        TextView tv = (TextView) findViewById(R.id.statsWeight);
+        tv.setText("wgt: "+Globals.boat.getTotalWeight()+"/"+Globals.boat.getMaxWeight());
+        tv = (TextView) findViewById(R.id.statsVolume);
+        tv.setText("vol: "+Globals.boat.getTotalVolume()+"/"+Globals.boat.getMaxVolume());
+        tv = (TextView) findViewById(R.id.statsSpeed);
+        tv.setText("speed: "+Globals.boat.getSpeed());
+        tv = (TextView) findViewById(R.id.statsMoney);
+        tv.setText(Globals.boat.getMoney()+"$");
 
-            @Override
-            public void onTabSelected(ActionBar.Tab tab, android.support.v4.app.FragmentTransaction fragmentTransaction) {
-                viewPager.setCurrentItem(tab.getPosition());
-            }
+    }
 
-            @Override
-            public void onTabUnselected(ActionBar.Tab tab, android.support.v4.app.FragmentTransaction fragmentTransaction) {
+    @Override
+    public void onBackPressed() {
 
-            }
+        String message = Globals.saveBoat()?"Game saved.":"Game could not be saved.";
+        Toast toast = Toast.makeText(this,message,Toast.LENGTH_LONG);
+        toast.show();
+        Intent intent = new Intent(this,MainMenu.class);
+        startActivity(intent);
+    }
 
-            @Override
-            public void onTabReselected(ActionBar.Tab tab, android.support.v4.app.FragmentTransaction fragmentTransaction) {
-
-            }
-        };
-
-
-        actionBar.addTab(actionBar.newTab().setText("passengers").setTabListener(tabListener));
-        actionBar.addTab(actionBar.newTab().setText("crew").setTabListener(tabListener));
-        actionBar.addTab(actionBar.newTab().setText("resources").setTabListener(tabListener));
-        actionBar.addTab(actionBar.newTab().setText("equipment").setTabListener(tabListener));
-*/
-
-
+    public void setIslandName(){
+        TextView islandNameTV = (TextView) findViewById(R.id.islandName);
+        islandNameTV.setText(Globals.boat.getCurrentIsland().getName());
     }
 
     protected void onResume() {
@@ -115,5 +119,9 @@ public class IslandActivity extends FragmentActivity {
     }
 
 
+    public void goToMap(View view) {
+        Intent intent = new Intent(this,BMapActivity.class);
+        startActivity(intent);
+    }
 }
 

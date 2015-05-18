@@ -8,15 +8,15 @@ import java.util.Map;
  */
 public class Crew extends Cargo {
 
-    private float salary;
-    private float upkeep;
+    private int salary;
+    private int upkeep;
 
     public Crew(String type){
         super(type);
         inflate(type);
     }
 
-    public Crew(String type, float weight, float volume, String name, float upkeep, float salary) {
+    public Crew(String type, int weight, int volume, String name, int upkeep, int salary) {
         super(weight,volume,name);
         this.upkeep = upkeep;
         this.salary = salary;

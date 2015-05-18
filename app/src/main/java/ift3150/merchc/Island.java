@@ -1,17 +1,19 @@
 package ift3150.merchc;
 
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-public class Island extends Container {
+public class Island extends Container  {
     private static final String TAG = "Island";
     ///base////////
-    float xCoord;
-    float yCoord;
-    String industry;
+    private int xCoord;
+    private int yCoord;
+    private String industry;
     ///////////////////
 
     //ArrayList<Trajectory> trajectories= new ArrayList<Trajectory>();
@@ -20,7 +22,7 @@ public class Island extends Container {
     //float[] equip={};
     //Market market= new Market(buy, sell, equip);
 
-    public Island(String name, float x, float y, String industry){
+    public Island(String name, int x, int y, String industry){
 
         xCoord=x;
         yCoord=y;
@@ -31,6 +33,41 @@ public class Island extends Container {
 
     public String getName(){
         return this.name;
+    }
+
+    public int getxCoord() {
+        return xCoord;
+    }
+
+    public int getyCoord() {
+        return yCoord;
+    }
+
+    public String getIndustry() {
+        return industry;
+    }
+
+    public void tick() {
+
+    }
+
+    //@TODO free up names
+    public void deliver() {
+        SQLiteDatabase db = Globals.dbHelper.getWritableDatabase();
+        String selection = DbHelper.C_FILENAME+" = ? and "+DbHelper.C_CONTAINER+" = ? and "+DbHelper.C_DESTINATION+" = ?";
+        String [] selectArgs = {Globals.saveName,Globals.boat.getName(),name};
+        String [] columns = {DbHelper.C_FEE,DbHelper.C_DAYSLEFT};
+        Cursor c = db.query(DbHelper.T_PASSENGERS,columns,selection,selectArgs,null,null,null);
+        if(!c.moveToFirst()){c.close();db.close();return;}
+        do{
+            int columnIndex = c.getColumnIndex(DbHelper.C_FEE);
+            int fee = c.getInt(columnIndex);
+            columnIndex = c.getColumnIndex(DbHelper.C_DAYSLEFT);
+            int daysLeft = c.getInt(columnIndex);
+            Globals.boat.addMoney(daysLeft>=0?fee:(int)(Passenger.LATE_PENALTY*daysLeft*fee));
+        }while(c.moveToNext());
+
+        db.delete(DbHelper.T_PASSENGERS,selection,selectArgs);
     }
 
 

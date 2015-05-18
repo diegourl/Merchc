@@ -5,14 +5,14 @@ package ift3150.merchc;
  */
 public abstract class Cargo extends Typable {
 
-    protected float weight;
-    protected float volume;
+    protected int weight;
+    protected int volume;
     protected int amount;
 
     public Cargo(String type){
         super(type);
     }
-    public Cargo(float weight, float volume, String name){
+    public Cargo(int weight, int volume, String name){
         this.weight = weight;
         this.volume = volume;
         this.name = name;
@@ -21,16 +21,16 @@ public abstract class Cargo extends Typable {
     @Override
     protected abstract void inflate(String type);
 
-    public float getWeight(){
+    public int getWeight(){
         return weight;
     }
-    private void setWeight(float weight){
+    private void setWeight(int weight){
         this.weight= weight;
     }
-    public float getVolume(){
+    public int getVolume(){
         return volume;
     }
-    private void setVolume(float volume){
+    private void setVolume(int volume){
         this.volume= volume;
     }
     public int getAmount(){ return amount;}

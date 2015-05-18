@@ -14,13 +14,14 @@ public class IslandDialog extends DialogFragment{
         // Use the Builder class for convenient dialog construction
         Bundle bundle = getArguments();
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        builder.setMessage(bundle.getCharSequence("name"));//R.string.dialog_fire_missiles
+        builder.setMessage(bundle.getCharSequence("name")+". The main industry is "+ bundle.getCharSequence("industry"));//R.string.dialog_fire_missiles
                    /* .setPositiveButton(R.string.fire, new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int id) {
                             // FIRE ZE MISSILES!
                         }
                     })
                     */
+
         builder.setNegativeButton(R.string.exit_island_info, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
                 // User cancelled the dialog

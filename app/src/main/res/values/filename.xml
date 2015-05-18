@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <item
+        type="id"
+        name="id_days" />
+    <item
+        type="id"
+        name="id_tox" />
+    <item
+        type="id"
+        name="id_toy" />
+    <item
+        type="id"
+        name="id_fromx" />
+    <item
+        type="id"
+        name="id_fromy" />
+    <item
+        type="id"
+        name="island" />
+    <item
+        type="id"
+        name="industry" />
+
+    <item
+        type="id"
+        name="trajectory"/>
+</resources>

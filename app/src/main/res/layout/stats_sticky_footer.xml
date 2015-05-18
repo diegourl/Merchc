@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="horizontal" android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:layout_alignParentBottom="true"
+    android:layout_centerHorizontal="true"
+    android:gravity="center_horizontal"
+    android:weightSum="4"
+    android:background="#ff000000">
+
+    <TextView
+        android:layout_width="0dp"
+        android:layout_weight="1"
+        android:layout_height="wrap_content"
+        android:text="weight"
+        android:gravity="center_horizontal"
+        android:id="@+id/statsWeight"
+        android:textColor="#ffffffff" />
+
+    <TextView
+        android:layout_width="0dp"
+        android:layout_weight="1"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
+        android:text="volume"
+        android:id="@+id/statsVolume"
+        android:textColor="#ffffffff"/>
+
+    <TextView
+        android:layout_width="0dp"
+        android:layout_weight="1"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
+        android:text="speed"
+        android:id="@+id/statsSpeed"
+        android:textColor="#ffffffff"/>
+
+    <TextView
+        android:layout_width="0dp"
+        android:layout_weight="1"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
+        android:text="money doe"
+        android:id="@+id/statsMoney"
+        android:textStyle="bold"
+        android:textColor="#ffffffff"/>
+</LinearLayout>

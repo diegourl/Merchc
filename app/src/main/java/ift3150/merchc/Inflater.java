@@ -2,6 +2,7 @@ package ift3150.merchc;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
@@ -32,6 +33,7 @@ public class Inflater {
     private String containerName;
     private Map<String,Island> map;
     private Boat boat;
+    private String currentArchipelago;
     private SQLiteDatabase db;
 
     public Inflater(String saveName){
@@ -40,7 +42,18 @@ public class Inflater {
         db = Globals.dbHelper.getWritableDatabase();
     }
 
-    public  void inflateIsland(String name, float x, float y, String industry){
+    public void inflateArchipelago(String name, int x, int y) {
+        ContentValues values = new ContentValues();
+        values.clear();
+        values.put(DbHelper.C_FILENAME,saveName);
+        values.put(DbHelper.C_NAME,name);
+        values.put(DbHelper.C_X,x);
+        values.put(DbHelper.C_Y,y);
+        db.insertOrThrow(DbHelper.T_ARCHIPELAGOS,null,values);
+
+    }
+
+    public  void inflateIsland(String name, int x, int y, String industry){
         Island island = new Island(name,x,y,industry);
         //DbHelper.write(saveName, name, x, y, industry);
 
@@ -52,6 +65,7 @@ public class Inflater {
         values.put(DbHelper.C_X, x);
         values.put(DbHelper.C_Y, y);
         values.put(DbHelper.C_INDUSTRY, industry);
+        values.put(DbHelper.C_ARCHIPELAGO,currentArchipelago);
         db.insertOrThrow(DbHelper.T_ISLANDS, null, values);
 
         //Provisional save into map
@@ -59,8 +73,8 @@ public class Inflater {
 
     }
 
-    public void inflateBoat(String name, String type, String starting) {
-        boat = new Boat(name,type);
+    public void inflateBoat(String name, String type, String starting, int money) {
+        boat = new Boat(name,type,money);
         //DbHelper.write(...
         //ContentValues is a name-value pair data structure which we then shove into the db
         ContentValues values = new ContentValues();
@@ -70,7 +84,56 @@ public class Inflater {
         values.put(DbHelper.C_CURRENTISLAND, starting);
         values.put(DbHelper.C_TYPE, boat.getType());
         values.put(DbHelper.C_REPAIR, boat.getRepair());
+        values.put(DbHelper.C_MONEY,boat.getMoney());
         db.insertOrThrow(DbHelper.T_BOAT, null, values);
+
+    }
+
+    public void completeBoatStats(String name) {
+        Cursor c;
+        int columnIndex;
+        String query;
+        String selection = DbHelper.C_FILENAME + " = ? and " + DbHelper.C_NAME + " = ?";
+        String [] selectArgs = new String []{saveName,name};
+
+        ContentValues values = new ContentValues();
+        values.clear();
+        values.put(DbHelper.C_TOTAL_WEIGHT,boat.getTotalWeight());
+        values.put(DbHelper.C_TOTAL_VOLUME,boat.getTotalVolume());
+        values.put(DbHelper.C_FOOD,boat.getFood());
+        db.update(DbHelper.T_BOAT,values,selection,selectArgs);
+
+        /*query = "select sum( " + DbHelper.C_WEIGHT
+                            + " ) from " + DbHelper.T_PASSENGERS
+                            + " where " + DbHelper.C_FILENAME + " = ?"
+                            + " and " + DbHelper.C_CONTAINER + " = ?";
+        c = db.rawQuery(query,selectArgs);
+        columnIndex = c.getColumnIndex(DbHelper.C_WEIGHT);
+        int totalWeight = c.getInt(columnIndex);
+
+        query = "select sum( " + DbHelper.C_WEIGHT
+                + " ) from " + DbHelper.T_CREW
+                + " where " + DbHelper.C_FILENAME + " = ?"
+                + " and " + DbHelper.C_CONTAINER + " = ?";
+        c = db.rawQuery(query,selectArgs);
+        columnIndex = c.getColumnIndex(DbHelper.C_WEIGHT);
+        totalWeight += c.getInt(columnIndex);
+
+        query = "select sum( " + DbHelper.C_WEIGHT
+                + " ) from " + DbHelper.T_RESOURCES
+                + " where " + DbHelper.C_FILENAME + " = ?"
+                + " and " + DbHelper.C_CONTAINER + " = ?";
+        c = db.rawQuery(query,selectArgs);
+        columnIndex = c.getColumnIndex(DbHelper.C_WEIGHT);
+        totalWeight += c.getInt(columnIndex);
+
+        query = "select sum( " + DbHelper.C_WEIGHT
+                + " ) from " + DbHelper.T_EQUIPMENT
+                + " where " + DbHelper.C_FILENAME + " = ?"
+                + " and " + DbHelper.C_CONTAINER + " = ?";
+        c = db.rawQuery(query,selectArgs);
+        columnIndex = c.getColumnIndex(DbHelper.C_WEIGHT);
+        totalWeight += c.getInt(columnIndex);*/
 
     }
 
@@ -92,12 +155,21 @@ public class Inflater {
         values.put(DbHelper.C_FEE, passenger.getFee());
         values.put(DbHelper.C_DAYSLEFT, passenger.getDaysLeft());
         db.insertOrThrow(DbHelper.T_PASSENGERS, null, values);
+
+        if(boat != null) {
+            boat.addWeight(passenger.getWeight());
+            boat.addVolume(passenger.getVolume());
+        }
         //provisional save
         Island island = map.get(containerName);
         if(island != null)
             island.addPassenger(passenger);
         else
             boat.addPassenger(passenger);
+
+
+
+
     }
 
     public  void inflateResource(String type, int amount) {
@@ -110,6 +182,12 @@ public class Inflater {
         values.put(DbHelper.C_TYPE, resource.getType());
         values.put(DbHelper.C_AMOUNT, resource.getAmount());
         db.insertOrThrow(DbHelper.T_RESOURCES, null, values);
+
+        if(boat != null) {
+            boat.addWeight(resource.getWeight());
+            boat.addVolume(resource.getVolume());
+            boat.addFood(resource.getFoodValue());
+        }
 
         //provisional save
         Island island = map.get(containerName);
@@ -129,6 +207,11 @@ public class Inflater {
         values.put(DbHelper.C_TYPE, equipment.getType());
         values.put(DbHelper.C_AMOUNT, equipment.getAmount());
         db.insertOrThrow(DbHelper.T_EQUIPMENT, null, values);
+
+        if(boat != null) {
+            boat.addWeight(equipment.getWeight());
+            boat.addVolume(equipment.getVolume());
+        }
         //provisional save
         Island island = map.get(containerName);
         if(island != null)
@@ -138,25 +221,32 @@ public class Inflater {
     }
 
     public  void inflateCrew(String type, int amount) {
-        Crew crew = new Crew(type);
-        //DbHelper.write.....
+
         ContentValues values = new ContentValues();
-        values.clear();
-        values.put(DbHelper.C_FILENAME,saveName);
-        values.put(DbHelper.C_CONTAINER, containerName);
-        values.put(DbHelper.C_NAME, crew.getName());
-        values.put(DbHelper.C_WEIGHT, crew.getWeight());
-        values.put(DbHelper.C_VOLUME, crew.getVolume());
-        values.put(DbHelper.C_TYPE, crew.getType());
-        values.put(DbHelper.C_SALARY, crew.getSalary());
-        values.put(DbHelper.C_UPKEEP, crew.getUpkeep());
-        db.insertOrThrow(DbHelper.T_CREW, null, values);
+        for(int i = 0;i<amount;i++) {
+            Crew crew = new Crew(type);
+            values.clear();
+            values.put(DbHelper.C_FILENAME, saveName);
+            values.put(DbHelper.C_CONTAINER, containerName);
+            values.put(DbHelper.C_NAME, crew.getName());
+            values.put(DbHelper.C_WEIGHT, crew.getWeight());
+            values.put(DbHelper.C_VOLUME, crew.getVolume());
+            values.put(DbHelper.C_TYPE, crew.getType());
+            values.put(DbHelper.C_SALARY, crew.getSalary());
+            values.put(DbHelper.C_UPKEEP, crew.getUpkeep());
+            db.insertOrThrow(DbHelper.T_CREW, null, values);
+
+            if (boat != null) {
+                boat.addWeight(crew.getWeight());
+                boat.addVolume(crew.getVolume());
+            }
+        }
         //provisional save
-        Island island = map.get(containerName);
+        /*Island island = map.get(containerName);
         if(island != null)
             island.addCrew(crew);
         else
-            boat.addCrew(crew);
+            boat.addCrew(crew);*/
 
     }
     //asdlfkjasdlkjasdlfkj
@@ -181,4 +271,9 @@ public class Inflater {
     public Boat getBoat() { return boat; }
 
     public void closeDB() { db.close();   }
+
+
+    public void setCurrentArchipelago(String currentArchipelago) {
+        this.currentArchipelago = currentArchipelago;
+    }
 }

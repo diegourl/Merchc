@@ -7,6 +7,8 @@ import java.util.Map;
  * Created by Diego on 2015-03-11.
  */
 public class Passenger extends Cargo{
+    private static final String TAG = "Passenger";
+    public static final double LATE_PENALTY = 0.15;
     private String destination;
     private int fee;
     private int daysLeft;
@@ -16,7 +18,7 @@ public class Passenger extends Cargo{
         this.destination = destination;
     }
 
-    public Passenger(String type, float weight, float volume, String name, String destination, int fee, int daysLeft){
+    public Passenger(String type, int weight, int volume, String name, String destination, int fee, int daysLeft){
         super(weight,volume,name);
         this.destination = destination;
         this.fee = fee;
