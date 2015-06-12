@@ -62,7 +62,8 @@ public class CrewCursorAdapter extends SimpleCursorAdapter implements View.OnCli
         tvType.setText(type);
         columnIndex = cursor.getColumnIndex(DbHelper.C_NAME);
         String name = cursor.getString(columnIndex);
-        tvName.setText(name);
+        //tvName.setText(name);
+        tvName.setText("");
         columnIndex = cursor.getColumnIndex(DbHelper.C_UPKEEP);
         int upkeep = cursor.getInt(columnIndex);
         tvUpkeep.setText(upkeep+" food");

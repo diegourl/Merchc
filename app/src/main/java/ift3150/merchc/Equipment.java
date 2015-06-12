@@ -49,6 +49,17 @@ public class Equipment extends Cargo{
         return m;
     }
 
+    @Override
+    public int getVolume() {
+        return volume*amount;
+    }
+
+    @Override
+    public int getWeight() {
+        return weight*amount;
+    }
+
+
     public static int getPrice(String type, int amount){
         if(amount == 0) amount = 1;
         switch (type){

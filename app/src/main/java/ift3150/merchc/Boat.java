@@ -1,7 +1,12 @@
 package ift3150.merchc;
+import android.content.ContentValues;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
+import android.util.Log;
 import android.widget.Toast;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 
@@ -37,39 +42,36 @@ public class Boat extends Container{
         inflate();
     }
 
-    public Boat(String name, String type, int repair, Island island, int money, int totalWeight, int totalVolume, int food){
+    public Boat(String name, String type, int repair, Island island, int money){
         this.name = name;
         this.type = type;
         inflate();
         this.repair = repair;
         this.currentIsland = island;
         this.money = money;
-        this.totalWeight = totalWeight;
-        this.totalVolume = totalVolume;
-        this.food = food;
     }
 
     //@TODO add boat types
     private void inflate(){
         switch(type){
             case "canoe": {
-                speed=3;
-                maxWeight=3;
-                maxVolume=2;
+                speed=40;
+                maxWeight=300;
+                maxVolume=2000;
                 minCrew=1;
                 break;
             }
 
             case "skiff":{
-                speed=6;
-                maxWeight=24;
-                maxVolume=16;
-                minCrew=5;
+                speed=60;
+                maxWeight=600;
+                maxVolume=4000;
+                minCrew=3;
                 break;
             }
             default: {
 
-                System.out.println("Error, incorrect Boat type");
+
             }
 
         }
@@ -84,6 +86,12 @@ public class Boat extends Container{
     //@TODO upgrade
     public float getSpeed(){
         return speed;
+    }
+
+    //windforce is needed as some equipments changes they way wind affects speed
+    //as is weight can slow you down up to 50% of basepeed
+    public double getSpeed( double windSpeed){
+        return speed*(1-0.75*totalWeight/maxWeight) + windSpeed*0.15;
     }
     
     public String getType(){ return type;}
@@ -148,209 +156,88 @@ public class Boat extends Container{
         return food;
     }
 
-    public void tick(){
+    public void setFood(int food){ this.food = food;}
 
+    public List<Happening> tick(){
+        ArrayList<Happening> happenings = new ArrayList<>(2);
+        SQLiteDatabase db = Globals.dbHelper.getWritableDatabase();
+        String query = "select sum("+DbHelper.C_SALARY+") as "+DbHelper.C_SALARY+", sum("+DbHelper.C_UPKEEP+") as "+DbHelper.C_UPKEEP+" from "+DbHelper.T_CREW+" where "+DbHelper.C_FILENAME+" = ? and "+DbHelper.C_CONTAINER+" = ?";
+        String [] selectArgs = {Globals.saveName,name};
+        Cursor c = db.rawQuery(query, selectArgs);
+
+        int money = 0;
+        int food = 0;
+        if(c.moveToFirst()) {
+            int columnIndex = c.getColumnIndex(DbHelper.C_SALARY);
+            money = c.getInt(columnIndex);
+            columnIndex = c.getColumnIndex(DbHelper.C_UPKEEP);
+            food = c.getInt(columnIndex);
+        }
+
+        happenings.add(payCrew(money));
+        happenings.add(feedCrew(food));
+
+        query = "update "+DbHelper.T_PASSENGERS+" set "+DbHelper.C_DAYSLEFT+" = ("+DbHelper.C_DAYSLEFT+" - 1) where "+DbHelper.C_FILENAME+" = ? and "+DbHelper.C_CONTAINER+" = ?";
+        db.rawQuery(query,selectArgs);
+        c.close();
+        db.close();
+
+        return happenings;
     }
 
-    private boolean feedCrew(int days) {
-        while(days-->0){
+    private Happening feedCrew(int food) {
+        SQLiteDatabase db = Globals.dbHelper.getWritableDatabase();
+        String selection = DbHelper.C_FILENAME+" = ? and "+DbHelper.C_CONTAINER+" = ? and "+DbHelper.C_TYPE+" = ?";
+        String [] columns = {DbHelper.C_AMOUNT};
+        int [] foodWeights = new int [Resource.foodTypes.length];
+        int [] foodAmounts = new int [Resource.foodTypes.length];
+        int totalFood = 0;
+        for(int i = 0; i < Resource.foodTypes.length;i++){
+            String [] selectArgs = {Globals.saveName,name,Resource.foodTypes[i]};
+            Cursor c = db.query(DbHelper.T_RESOURCES,columns,selection,selectArgs,null,null,null);
+            if(!c.moveToFirst()){foodAmounts[i] = 0; foodWeights[i] = 0; continue;}
+            int columnIndex = c.getColumnIndex(DbHelper.C_AMOUNT);
+            foodAmounts[i]= c.getInt(columnIndex);
+            foodWeights[i] = (new Resource(Resource.foodTypes[i],1)).getWeight();
+
+            totalFood += foodWeights[i]*foodAmounts[i];
+        }
+
+        int foodSpent = 0;
+
+        for(int i = 0; i < Resource.foodTypes.length;i++){
+            String [] selectArgs = {Globals.saveName,name,Resource.foodTypes[i]};
+            //String query = "update "+DbHelper.T_RESOURCES+" set "+DbHelper.C_AMOUNT+" = ("+DbHelper.C_AMOUNT+" - "+") where "+DbHelper.C_FILENAME+" = ? and "+DbHelper.C_CONTAINER+" = ?";
+            if(foodAmounts[i]<=0) continue;
+            ContentValues values = new ContentValues();
+            int contributionAmount =(int) Math.ceil((1.0)*food*foodAmounts[i]/(totalFood));
+            contributionAmount = Math.min(contributionAmount,foodAmounts[i]);
+            values.put(DbHelper.C_AMOUNT,foodAmounts[i]-contributionAmount);
+            db.update(DbHelper.T_RESOURCES,values,selection,selectArgs);
+            foodSpent += contributionAmount*foodWeights[i];
+            Log.d(TAG,"contribution :"+Resource.foodTypes[i]+" "+contributionAmount);
 
         }
-        return true;
-    }
+        Log.d(TAG, "totalFood :"+totalFood);
 
-    private boolean payCrew(int i) {
-        return true;
-    }
-
-
-
-/*
-
-    //type 1=seaman= player in the boat!
-    public boolean addCrew(Crew crew){
-        if(island.crew.remove(crew)){
-            this.crew.add(crew);
-            return true;
-        }else return false;
-    }
-
-
-    //type 1=seaman= player in the boat!
-    public boolean addPass(Passenger pass){
-        if(island.passengers.remove(pass)){
-            passengers.add(pass);
-            return true;
-        }else return false;
-    }
-
-
-    //type 1=seaman= player in the boat!
-    public boolean addEquip(Equipment equip){
-        if(island.equipment.remove(equip)){
-            this.equipment.add(equip);
-            return true;
+        addFood(-foodSpent);
+        if(food>totalFood) {
+            return Happening.happen(Event.FOOD_SHORTAGE);
         }
-        return false;
+        return null;
     }
 
-
-    //type 1=seaman= player in the boat!
-    //on transfer un nombred d'unite vers le bateau
-    //metal, fish, wood, water, booze
-    public boolean addRes(int metals, int fish, int wood, int water, int booze,
-                          int coconuts, int tobacco){
-        if(this.resources.transferTo(island.resources, metals, fish, wood, water, booze,
-                coconuts,  tobacco)){
-            return true;
+    private Happening payCrew(int money) {
+        if(money>this.money) {
+            addMoney(-this.money);
+            return Happening.happen(Event.MONEY_SHORTAGE);
         }
-        return false;
+        addMoney(-money);
+        return null;
+
     }
 
-    //using equipment means you can only use it once
-    public boolean useEquip(Cargo cargo){
-        if(equipment.remove(cargo))return true;
-        return false;
-    }
-    //Passengers are not removed in their usage
-    public boolean usePass(Cargo cargo){
-        if(equipment.contains(cargo))return true;
-        return false;
-    }
-    //Crewmembers are not removed in their usage
-    public boolean useCrew(Cargo cargo){
-        if(equipment.contains(cargo))return true;
-        return false;
-    }
-*/
-    //in units of food
-  /*
-    public int getDailyCrewMaintenance(){
-        int total=3;//3 unites of food per day. yes above average this is ME that is eating!
-        for( Crew cm: this.crew){
-            total+=cm.getUpkeep();
-        }
-        return total;
-    }
-    //in units of food
-    public int getDailyCrewCost(){
-        int total=0;
-        for( Crew cm: this.crew){
-            total+=cm.getSalary();
-        }
-        return total;
-    }
-    //units of food
-    public int getTrajUpkeep(Trajectory traj){
-        return (int) traj.getTrajectoryLength()*getDailyCrewMaintenance();
-    }
-    //in $$
-    public float getTrajCost(Trajectory traj){
-        return traj.getTrajectoryLength()*getDailyCrewCost();
-    }
+    public int getMaxRepair(){return MAX_REPAIR;}
 
-    public String printTrajs(){
-        String s="";
-        for(Trajectory t :island.trajectories){
-            s+=t.toString()+" at a cost of:"+getTrajCost(t)+"$ and "+getTrajUpkeep(t)+ "units of food\n";
-        }
-        return s;
-    }
 
-    public boolean buyEquipment(int type, int number){
-        int realType= island.equipment.get(type-1).type;//if its first in the list it should be 0 in index
-        float price=island.market.equiPrices[realType-1];
-        if(dollars>price && number>0 && freeVolume>island.equipment.get(type-1).getVolume()
-                && freeWeight>island.equipment.get(type-1).getWeight()){
-            Equipment temp=island.equipment.remove(type-1);
-            if(temp != null){
-                equipment.add(temp);
-                number--;
-                dollars-=price;
-                freeWeight-=temp.getWeight();
-                freeVolume-=temp.getVolume();
-                System.out.println("Success! "+temp.name+"added to ship.");
-                return true;
-            }
-        }
-        else System.out.println("Insufficient funds or insufficient boat capacity");
-        return false;
-    }
-    public boolean buyResources(int type, int number){
-        float price=island.getResourcePrice(type-1);
-        float addedW=Ressources.getWeight(type)*number;//type here is from 1-7
-        float addedV=Ressources.getVolume(type)*number;
-        int[] transfer={0,0,0,0,0,0,0};
-        transfer[type-1]=number;// set the variable to modify
-
-        if(((price*number)<=dollars) && (freeWeight>= addedW) && (freeVolume>=addedV)){
-            if(island.resources.transferTo(this.resources, transfer[0], transfer[1], transfer[2], transfer[3], transfer[4], transfer[5], transfer[6])){
-                dollars-=price*number;
-                freeWeight-=addedW;
-                freeVolume-=addedV;
-                return true;
-            }else System.out.println("Insufficient resources on island for transfer");
-        }else System.out.println("Insufficient funds or insufficient boat capacity");
-        return false;
-    }
-
-    public boolean sellResources(int type, int number){
-        float price=island.getResourcePrice(type-1);
-        int[] transfer={0,0,0,0,0,0,0};
-        transfer[type-1]=number;// set the variable to modify
-
-        if(this.resources.transferTo(this.island.resources, transfer[0], transfer[1], transfer[2], transfer[3], transfer[4], transfer[5], transfer[6])){
-            dollars+=price*number;
-            freeWeight+= Ressources.getWeight(type)*number;
-            freeVolume+= Ressources.getVolume(type)*number;
-            return true;
-        }else System.out.println("Insufficient resources on island for transfer");
-
-        return false;
-    }
-    public boolean board(int num){
-        Passenger pass=island.passengers.get(num-1);
-        if(pass.volume<freeVolume && pass.weight<freeWeight){
-            if(passengers.add(pass)){
-                System.out.println(pass.name+" boarded");
-                freeWeight-=pass.weight;
-                freeVolume-=pass.volume;
-                island.passengers.remove(pass);
-                return true;
-            }
-        }
-        return false;
-    }
-    //not sure its very "safe" gonna throw an array outtb if the number if wrong...trycatch?
-    //doesn't look very safe
-
-    public boolean hire(int num){
-        crew.add(island.crew.remove(num-1));
-        return true;
-    }
-
-    //
-    public int sail(int num){
-        Trajectory rout= island.trajectories.get(num-1);
-        if(getTrajUpkeep(rout)< resources.totalFood()){
-            if(getTrajCost(rout)<dollars){
-                if(rout.events.size()!=0){
-                    //foreach event logic to come
-                }
-                else System.out.println("Uneventful journey.");
-                dollars-=getTrajCost(rout);
-                float preVol= resources.calcVolume();
-                float preWei= resources.calcWeight();
-                resources.feed(getTrajUpkeep(rout));
-                System.out.println("yop");
-                freeVolume += preVol- resources.calcVolume();
-                freeWeight += preWei- resources.calcWeight();
-                this.island = rout.destination;
-                return (int) rout.getTrajectoryLength();
-            }
-            else System.out.println("Insufficient funds for journey ( remove some crew or sell some resources).");
-        }
-        else System.out.println("Insufficient food for journey ( remove some crew or buy more food resources).");
-        return 0;
-    }*/
 }

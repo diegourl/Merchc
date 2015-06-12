@@ -14,10 +14,15 @@ public class Happening {
                 return pirateAttack();
             case Event.STORM :
                 return storm();
+            case Event.MONEY_SHORTAGE :
+                return moneyShortage();
+            case Event.FOOD_SHORTAGE :
+                return foodShortage();
             default :
                 return none();
         }
     }
+
 
     private Happening(String type){
         this.type = type;
@@ -36,10 +41,24 @@ public class Happening {
     }
 
     private static Happening pirateAttack() {
-        Happening happening = new Happening(Event.STORM);
+        Happening happening = new Happening(Event.PIRATE_ATTACK);
         happening.setOutcomeMessage("You were attacked by pirates.");
         return happening;
     }
+
+    private static Happening moneyShortage() {
+        Happening happening = new Happening(Event.MONEY_SHORTAGE);
+        happening.setOutcomeMessage("You ran out of money.");
+        return happening;
+    }
+
+    private static Happening foodShortage() {
+        Happening happening = new Happening(Event.FOOD_SHORTAGE);
+        happening.setOutcomeMessage("You ran out of food.");
+        return happening;
+    }
+
+
 
 
 

@@ -29,16 +29,16 @@ public class Passenger extends Cargo{
     //@TODO add passenger types
     protected void inflate(String type){
         switch (type){
-            case "farmer": this.weight = 4; this.volume = 2;break;
-            case "missionary": this.weight = 1; this.volume = 1;break;
-            case "witch": this.weight = 2; this.volume = 2;break;
-            case "viking": this.weight = 3; this.volume = 2;break;
-            case "tradesperson": this.weight = 2; this.volume = 2;break;
-            case "assassin": this.weight = 2; this.volume = 2;break;
-            case "oldman": this.weight = 2; this.volume = 1;break;
+            case "farmer": this.weight = 100; this.volume = 100;break;
+            case "missionary": this.weight = 60; this.volume = 70;break;
+            case "witch": this.weight = 60; this.volume = 70;break;
+            case "viking": this.weight = 100; this.volume = 100;break;
+            case "tradesperson": this.weight = 70; this.volume = 80;break;
+            case "assassin": this.weight = 60; this.volume = 60;break;
+            case "oldman": this.weight = 60; this.volume = 60;break;
         }
         fee = 10;
-        daysLeft = 0;
+        daysLeft = 3;
         name = NameGenerator.generateName(type);
 
     }

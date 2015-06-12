@@ -25,9 +25,9 @@ public class Crew extends Cargo {
 
     protected void inflate(String type){
         switch (type){
-            case "sailor": this.weight = 0; this.volume = 0; this.salary = 2; this.upkeep = 3; break;
-            case "doctor": this.weight = 0; this.volume = 0; this.salary = 4; this.upkeep = 3; break;
-            case "mercenary": this.weight = 0; this.volume = 0; this.salary = 3; this.upkeep = 4;break;
+            case "sailor": this.weight = 70; this.volume = 100; this.salary = 2; this.upkeep = 2; break;
+            case "doctor": this.weight = 80; this.volume = 120; this.salary = 5; this.upkeep = 2; break;
+            case "mercenary": this.weight = 100; this.volume = 100; this.salary = 4; this.upkeep = 4;break;
             case "spiritguide": this.weight = 0; this.volume = 0; this.salary = 0; this.upkeep = 0;break;
 
         }

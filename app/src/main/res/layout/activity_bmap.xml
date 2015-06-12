@@ -7,50 +7,42 @@
     android:background="#ff000000">
 
     <LinearLayout
-        android:orientation="vertical"
+        android:orientation="horizontal"
         android:layout_width="fill_parent"
         android:layout_height="0dp"
-        android:layout_weight="1"
+        android:layout_weight="2"
         android:gravity="center_vertical|center_horizontal">
 
+        <Button
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="\u25C0 island "
+            android:id="@+id/toIsland"
+            android:layout_gravity="center_vertical|right"
+            android:background="@drawable/rectangular_button_background"
+            android:textColor="@color/text_colour"
+            android:textAllCaps="false"
+            android:onClick="goToIsland"
+            android:layout_weight="1" />
+
         <TextView
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:text="Island"
             android:id="@+id/islandName"
             android:textColor="#ffffffff"
-            android:gravity="center_horizontal" />
+            android:gravity="center_horizontal"
+            android:layout_weight="5" />
 
 
     </LinearLayout>
 
-    <!--<view
-        android:layout_width="wrap_content"
-        android:layout_height="0dp"
-        class="android.support.v4.view.ViewPager"
-        android:id="@+id/gridPager"
-        android:layout_weight="19">
 
-        <android.support.v4.view.PagerTabStrip
-            android:id="@+id/pager_title_strip"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="top"
-            android:textColor="#ffffffff"
-            android:paddingTop="4dp"
-            android:paddingBottom="4dp" />
-
-
-
-
-
-
-    </view>-->
 
     <RelativeLayout
         android:layout_width="fill_parent"
         android:layout_height="0dp"
-        android:layout_weight="19"
+        android:layout_weight="24"
         android:id="@+id/fragment_container"></RelativeLayout>
 
     <LinearLayout
@@ -84,8 +76,25 @@
             android:layout_weight="1"
             android:layout_height="wrap_content"
             android:gravity="center_horizontal"
-            android:text="speed"
-            android:id="@+id/statsSpeed"
+            android:text="money doe"
+            android:id="@+id/statsMoney"
+            android:textStyle="bold"
+            android:textColor="#ffffffff"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="fill_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
+            android:text="food"
+            android:id="@+id/statsFood"
             android:textColor="#ffffffff"/>
 
         <TextView
@@ -93,10 +102,19 @@
             android:layout_weight="1"
             android:layout_height="wrap_content"
             android:gravity="center_horizontal"
-            android:text="money doe"
-            android:id="@+id/statsMoney"
-            android:textStyle="bold"
+            android:text="repair"
+            android:id="@+id/statsRepair"
             android:textColor="#ffffffff"/>
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
+            android:text="speed"
+            android:id="@+id/statsSpeed"
+            android:textColor="#ffffffff"/>
+
     </LinearLayout>
 
 </LinearLayout>

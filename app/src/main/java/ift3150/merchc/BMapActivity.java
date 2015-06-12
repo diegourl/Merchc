@@ -9,6 +9,7 @@ import android.util.Log;
 import android.view.Display;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -43,16 +44,6 @@ public class BMapActivity extends FragmentActivity{
         setBoatStats();
 
 
-        /*ImageView iv = new ImageView(this);
-        iv.setImageResource(R.drawable.green);
-
-        RelativeLayout rl = (RelativeLayout) findViewById(R.id.relMap);
-
-        RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(TILE_SIZE,TILE_SIZE);
-        layoutParams.topMargin = Globals.boat.getCurrentIsland().yCoord*TILE_SIZE;
-        layoutParams.leftMargin = Globals.boat.getCurrentIsland().xCoord*TILE_SIZE;
-        iv.setLayoutParams(layoutParams);
-        rl.addView(iv);*/
     }
 
 
@@ -97,6 +88,10 @@ public class BMapActivity extends FragmentActivity{
         tv.setText("speed: "+Globals.boat.getSpeed());
         tv = (TextView) findViewById(R.id.statsMoney);
         tv.setText(Globals.boat.getMoney()+"$");
+        tv = (TextView) findViewById(R.id.statsRepair);
+        tv.setText("repair: "+Globals.boat.getRepair()+"/"+Globals.boat.getMaxRepair());
+        tv = (TextView) findViewById(R.id.statsFood);
+        tv.setText("food: "+Globals.boat.getFood());
 
     }
 
@@ -110,4 +105,9 @@ public class BMapActivity extends FragmentActivity{
     }
 
     public int getTILES(){return TILES;}
+
+    public void goToIsland(View view) {
+        Intent intent = new Intent(this,IslandActivity.class);
+        startActivity(intent);
+    }
 }

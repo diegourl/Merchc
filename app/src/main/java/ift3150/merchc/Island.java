@@ -10,10 +10,12 @@ import java.util.Map;
 
 public class Island extends Container  {
     private static final String TAG = "Island";
+    public static final int ISLAND_IMAGES = 21;
     ///base////////
     private int xCoord;
     private int yCoord;
     private String industry;
+    private String image;
     ///////////////////
 
     //ArrayList<Trajectory> trajectories= new ArrayList<Trajectory>();
@@ -22,12 +24,13 @@ public class Island extends Container  {
     //float[] equip={};
     //Market market= new Market(buy, sell, equip);
 
-    public Island(String name, int x, int y, String industry){
+    public Island(String name, int x, int y, String industry, String image){
 
         xCoord=x;
         yCoord=y;
         this.name=name;
         this.industry = industry;
+        this.image = image;
     }
 
 
@@ -52,22 +55,42 @@ public class Island extends Container  {
     }
 
     //@TODO free up names
-    public void deliver() {
+    public ArrayList<String> deliver() {
+        ArrayList<String> delivered;
         SQLiteDatabase db = Globals.dbHelper.getWritableDatabase();
         String selection = DbHelper.C_FILENAME+" = ? and "+DbHelper.C_CONTAINER+" = ? and "+DbHelper.C_DESTINATION+" = ?";
         String [] selectArgs = {Globals.saveName,Globals.boat.getName(),name};
-        String [] columns = {DbHelper.C_FEE,DbHelper.C_DAYSLEFT};
-        Cursor c = db.query(DbHelper.T_PASSENGERS,columns,selection,selectArgs,null,null,null);
-        if(!c.moveToFirst()){c.close();db.close();return;}
+        Cursor c = db.query(DbHelper.T_PASSENGERS,null,selection,selectArgs,null,null,null);
+        if(!c.moveToFirst()){c.close();db.close();return null;}
+        delivered = new ArrayList<>(c.getCount());
         do{
             int columnIndex = c.getColumnIndex(DbHelper.C_FEE);
             int fee = c.getInt(columnIndex);
             columnIndex = c.getColumnIndex(DbHelper.C_DAYSLEFT);
             int daysLeft = c.getInt(columnIndex);
             Globals.boat.addMoney(daysLeft>=0?fee:(int)(Passenger.LATE_PENALTY*daysLeft*fee));
+
+            columnIndex = c.getColumnIndex(DbHelper.C_WEIGHT);
+            int weight = c.getInt(columnIndex);
+            Globals.boat.addWeight(-weight);
+            columnIndex = c.getColumnIndex(DbHelper.C_VOLUME);
+            int volume = c.getInt(columnIndex);
+            Globals.boat.addVolume(-volume);
+
+            columnIndex = c.getColumnIndex(DbHelper.C_NAME);
+            delivered.add(c.getString(columnIndex));
         }while(c.moveToNext());
 
         db.delete(DbHelper.T_PASSENGERS,selection,selectArgs);
+
+        c.close();
+        db.close();
+
+        return delivered;
+    }
+
+    public String getImage() {
+        return image;
     }
 
 

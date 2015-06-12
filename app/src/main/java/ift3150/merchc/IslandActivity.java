@@ -71,6 +71,10 @@ public class IslandActivity extends FragmentActivity {
         tv.setText("speed: "+Globals.boat.getSpeed());
         tv = (TextView) findViewById(R.id.statsMoney);
         tv.setText(Globals.boat.getMoney()+"$");
+        tv = (TextView) findViewById(R.id.statsRepair);
+        tv.setText("repair: "+Globals.boat.getRepair()+"/"+Globals.boat.getMaxRepair());
+        tv = (TextView) findViewById(R.id.statsFood);
+        tv.setText("food: "+Globals.boat.getFood());
 
     }
 

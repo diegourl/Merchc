@@ -14,7 +14,7 @@ public class DbHelper extends SQLiteOpenHelper {
     static final String DB_NAME = "gamestate.db";
 
     //increment this every time u alter the db. Can't decrement.
-    static final int DB_VERSION = 15;
+    static final int DB_VERSION = 16;
 
     //meaningless in our case but required
     static final String C_ID  = BaseColumns._ID;
@@ -28,6 +28,7 @@ public class DbHelper extends SQLiteOpenHelper {
     static final String C_X = "xCoord";
     static final String C_Y = "yCoord";
     static final String C_INDUSTRY = "industry";
+    static final String C_IMAGE = "image";
 
     static final String T_BOAT = "boat";
     static final String C_CURRENTISLAND = "currentIsland";
@@ -64,7 +65,7 @@ public class DbHelper extends SQLiteOpenHelper {
 
     static final String T_ARCHIPELAGOS = "archipelagos";
     static final String C_ARCHIPELAGO = "archipelago";
-
+    static final String T_NAMES = "names";
 
 
     Context context;
@@ -89,7 +90,7 @@ public class DbHelper extends SQLiteOpenHelper {
         Log.d(TAG,"onCreated sql: " + sql);
 
         sql = "create table " + T_ISLANDS + " (" + C_ID + " integer primary key autoincrement, "
-                + C_FILENAME + " text, " + C_NAME + " text, "  + C_Y + " int, "+ C_X + " int, " + C_INDUSTRY + " text, "+ C_ARCHIPELAGO +" text, unique(" + C_FILENAME + " , " + C_NAME + " ) on conflict replace)";
+                + C_FILENAME + " text, " + C_NAME + " text, "  + C_Y + " int, "+ C_X + " int, " + C_INDUSTRY + " text, "+ C_ARCHIPELAGO +" text, "+C_IMAGE+" int, unique(" + C_FILENAME + " , " + C_NAME + " ) on conflict replace)";
         db.execSQL(sql);
         Log.d(TAG,"onCreated sql: " + sql);
 

@@ -1,5 +1,7 @@
 package ift3150.merchc;
 
+import android.animation.AnimatorSet;
+import android.animation.ObjectAnimator;
 import android.app.Fragment;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -9,6 +11,11 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewPropertyAnimator;
+import android.view.animation.Animation;
+import android.view.animation.AnimationSet;
+import android.view.animation.AnimationUtils;
+import android.view.animation.TranslateAnimation;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -40,42 +47,36 @@ public class ArchipelagoFragment extends Fragment implements View.OnClickListene
 
         //do all the islands and stuff
         relativeLayout = addIslands(relativeLayout);
-        relativeLayout = addTrajectories(relativeLayout);
+        RelativeLayout trajectoryLayout = (RelativeLayout)relativeLayout.findViewById(R.id.trajectoryLayout);
+        //@TODO add island layout.       Right?
+        trajectoryLayout = addTrajectories(trajectoryLayout);
 
+        relativeLayout = addBoat(relativeLayout);
 
-
-        /*ImageView iv = new ImageView(getActivity());
-        iv.setImageResource(R.drawable.green);
-        iv.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
-        RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(TILE_SIZE,TILE_SIZE);
-        layoutParams.topMargin = Globals.boat.getCurrentIsland().yCoord*TILE_SIZE;
-        layoutParams.leftMargin = Globals.boat.getCurrentIsland().xCoord*TILE_SIZE;
-        iv.setLayoutParams(layoutParams);
-        relativeLayout.addView(iv);*/
         return relativeLayout;
     }
 
-    @Override
-    public void onViewCreated(View view, Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-        /*TextView textView = new TextView(getActivity());
-        textView.setTextColor(0xffffffff);
-        textView.setText("ballingdoe");
+    private RelativeLayout addBoat(RelativeLayout relativeLayout) {
+        Island i = Globals.boat.getCurrentIsland();
+        ImageView iv = new ImageView(getActivity());
+        iv.setImageResource(R.drawable.boat);
+        iv.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
+        RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(TILE_SIZE,TILE_SIZE);
+        layoutParams.topMargin = (int)((i.getyCoord()+.5)*TILE_SIZE);
+        layoutParams.leftMargin = (int)((i.getxCoord()+.5)*TILE_SIZE);
+        iv.setLayoutParams(layoutParams);
+        iv.setId(R.id.boat);
+        relativeLayout.addView(iv);
 
-        LinearLayout itemInfo = (LinearLayout)getView().findViewById(R.id.archipelagoItemInfo);
-
-        LinearLayout shortDescript = (LinearLayout) LayoutInflater.from(getActivity()).inflate(R.layout.archipelago_island_short,null);
-
-        itemInfo.addView(shortDescript,itemInfo.getChildCount()-1);*/
+        return relativeLayout;
     }
-
-
 
 
     private RelativeLayout addIslands(RelativeLayout relativeLayout){
         for(Island i: Globals.archipelago.values()){
             ImageView iv = new ImageView(getActivity());
-            iv.setImageResource(R.drawable.green);///@TODO add correct island image
+            //iv.setImageResource(R.drawable.green);///@TODO add correct island image
+            iv.setImageResource(iv.getContext().getResources().getIdentifier("drawable/"+i.getImage(),null,iv.getContext().getPackageName()));
             iv.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
             iv.setTag(i);
             RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(TILE_SIZE,TILE_SIZE);
@@ -92,16 +93,20 @@ public class ArchipelagoFragment extends Fragment implements View.OnClickListene
 
     private RelativeLayout addTrajectories(RelativeLayout relativeLayout){
         Object [] archipelago = Globals.archipelago.values().toArray();
+        int tr = 0;
         for(int i = 0;i<archipelago.length;i++){
             for(int j = i+1 ;j<archipelago.length;j++){
+                Log.d(TAG,"tr: "+tr++);
+                Log.d(TAG,"length: "+archipelago.length);
                 Trajectory trajectory;
                 if(((Island)archipelago[j]).getName().equals(Globals.boat.getCurrentIsland().getName()))
                     trajectory = eventler.getTrajectory((Island)archipelago[j],(Island)archipelago[i]);//make sure current island is the from
                 else
                     trajectory = eventler.getTrajectory((Island)archipelago[i],(Island)archipelago[j]);
 
+                Log.d(TAG,"feasibility: "+trajectory.getFrom().getName()+" "+trajectory.getTo().getName()+" "+trajectory.isFeasible());
                 if(!trajectory.isFeasible())
-                    return relativeLayout;
+                    continue;
 
                 int fromx = trajectory.getFrom().getxCoord();
                 int tox = trajectory.getTo().getxCoord();
@@ -117,7 +122,7 @@ public class ArchipelagoFragment extends Fragment implements View.OnClickListene
                 Log.d(TAG,"delta: ("+deltax+","+deltay+")");
 
                 int image_width=(int)(TILE_SIZE*(getDistance(0,0,deltax,deltay)-Math.sqrt(2)/1.7));
-                int image_height= 15;
+                int image_height= 220;
                 int topMargin=(TILE_SIZE*(toy+fromy+1)-image_height)/2;
                 int leftMargin=(TILE_SIZE*(tox+fromx+1)-image_width)/2;
                 RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(image_width, image_height);
@@ -126,13 +131,13 @@ public class ArchipelagoFragment extends Fragment implements View.OnClickListene
                 layoutParams.leftMargin = leftMargin;
 
                 iv.setLayerType(View.LAYER_TYPE_SOFTWARE, null);//needed for dashed line to work properly
-                iv.setRotation((float) Math.toDegrees(Math.atan2(deltay, deltax)));
+                iv.setRotation((float) Math.toDegrees(Math.atan2(toy-fromy, tox-fromx)));
 
                 iv.setLayoutParams(layoutParams);
 
                 if(Globals.boat.getCurrentIsland().getName().equals(trajectory.getFrom().getName())){
                     iv.setTag(trajectory);
-                    iv.setImageResource(R.drawable.dashed_line);
+                    iv.setImageResource(R.drawable.arrow);
                     iv.setFocusable(false);
                     Log.d(TAG, "focusable: " + iv.isFocusable());
                     iv.setOnClickListener(this);
@@ -161,65 +166,23 @@ public class ArchipelagoFragment extends Fragment implements View.OnClickListene
         Log.d(TAG,"click.");
         //ImageView iv = (ImageView) v;
         LinearLayout itemInfo = (LinearLayout)getView().findViewById(R.id.archipelagoItemInfo);
+        itemInfo.startAnimation(AnimationUtils.loadAnimation(getActivity(),
+                R.anim.slide_down));
         itemInfo.removeAllViews();
 
         switch (v.getId()){
             case R.id.island :
 
                 Island i = (Island) v.getTag();
-                //@TODO move to separate function
 
                 Log.d(TAG,"island clicked: "+i.getName());
 
                 //itemInfo.animate().translationY(itemInfo.getHeight()).setStartDelay(2000);
                 //Log.d(TAG,"wait: "+wait);
-                LinearLayout shortDescript = (LinearLayout) LayoutInflater.from(getActivity()).inflate(R.layout.archipelago_island_short,null);
-
-                TextView islandName = (TextView) shortDescript.findViewById(R.id.islandName);
-                islandName.setText(i.getName());
-
-                TextView islandDesc = (TextView) shortDescript.findViewById(R.id.islandDescript);
-                islandDesc.setText(" is a " + i.getIndustry() + " island.");
-                itemInfo.addView(shortDescript,itemInfo.getChildCount());
-
-                if(i.getName().equals(Globals.boat.getCurrentIsland().getName())){
-                    Log.d(TAG,"current island.");
-                    TextView youAreHere = (TextView) new TextView(getActivity());
-                    youAreHere.setText("You are here.");
-                    youAreHere.setTextColor(0xffffffff);
-                    itemInfo.addView(youAreHere,itemInfo.getChildCount());
-                }else{
-                    Log.d(TAG,"not current island.");
-                    SQLiteDatabase db = Globals.dbHelper.getReadableDatabase();
-                    String selection = DbHelper.C_FILENAME+" = ? and "+DbHelper.C_DESTINATION+" = ? and "+DbHelper.C_CONTAINER+" = ?";
-                    String [] selectArgs = new String[]{Globals.saveName,i.getName(),Globals.boat.getName()};
-                    String [] columns = new String []{DbHelper.C_TYPE,DbHelper.C_NAME,DbHelper.C_DAYSLEFT};
-                    Cursor c = db.query(DbHelper.T_PASSENGERS,columns,selection,selectArgs,null,null,DbHelper.C_DAYSLEFT+" ASC");
-                    //if(!c.moveToFirst()) {Log.d(TAG,"cursor empty");break;}
-                    Log.d(TAG,"passcount: "+c.getCount());
-                    for(int j = 0; (j<c.getCount())&&(j<3);j++){
-                        c.moveToPosition(j);
-                        TextView passengerHeaded = new TextView(getActivity());
-                        int columnIndex = c.getColumnIndex(DbHelper.C_TYPE);
-                        String type = c.getString(columnIndex);
-                        columnIndex = c.getColumnIndex(DbHelper.C_NAME);
-                        String name = c.getString(columnIndex);
-                        columnIndex = c.getColumnIndex(DbHelper.C_DAYSLEFT);
-                        int daysLeft = c.getInt(columnIndex);
-                        passengerHeaded.setText(type+" "+name+" must get there "+(daysLeft>0?"in "+daysLeft+" days.":"immediately."));
-                        passengerHeaded.setTextColor(0xffffffff);
-                        itemInfo.addView(passengerHeaded,itemInfo.getChildCount());
-                    }
-                    if(c.getCount()>4){
-                        TextView manyPassengers = new TextView(getActivity());
-                        manyPassengers.setText(c.getCount()+" more passengers are headed there.");
-                        manyPassengers.setTextColor(0xffffffff);
-                        itemInfo.addView(manyPassengers,itemInfo.getChildCount());
-                    }
-                    c.close();
-                    db.close();
-                }
+                itemInfo = setBoatInfo(i,itemInfo);
                 itemInfo.setVisibility(View.VISIBLE);
+                itemInfo.startAnimation(AnimationUtils.loadAnimation(getActivity(),
+                        R.anim.slide_up));
 
 
                 //itemInfo.animate().translationY(itemInfo.getHeight()).setStartDelay(2000);
@@ -232,67 +195,41 @@ public class ArchipelagoFragment extends Fragment implements View.OnClickListene
                 Log.d(TAG,"trajectory clicked");
                 itemInfo = setTrajectoryInfo(itemInfo,trajectory);
                 itemInfo.setVisibility(View.VISIBLE);
+                itemInfo.startAnimation(AnimationUtils.loadAnimation(getActivity(),
+                        R.anim.slide_up));
                 break;
 
             case R.id.sailButton :
 
                 Log.d(TAG,"sail clicked.");
-                sail((Trajectory) v.getTag());
+                Trajectory t = (Trajectory) v.getTag();
+                itemInfo = sail(t, itemInfo);
+                RelativeLayout trajectoryLayout = (RelativeLayout) relativeLayout.findViewById(R.id.trajectoryLayout);
+                trajectoryLayout.removeAllViews();
+                trajectoryLayout = addTrajectories(trajectoryLayout);
+
+                ImageView boatView = (ImageView)relativeLayout.findViewById(R.id.boat);
+
+                (boatAnimator(t,boatView)).start();
+                Log.d(TAG,"boat: "+boatView.getX()+","+boatView.getY());
+
+                BMapActivity bMapActivity = (BMapActivity)getActivity();
+                bMapActivity.setBoatStats();
+                bMapActivity.setIslandName();
+
+                itemInfo.startAnimation(AnimationUtils.loadAnimation(getActivity(),R.anim.slide_up));
                 break;
-
-                /*
-
-
-                int days = trajectory.getDuration();
-                int moneyCost = trajectory.getMoneyCost();
-                int foodCost = trajectory.getFoodCost();
-
-                if(moneyCost+100>Globals.boat.getMoney()){
-                    TextView cannotComplete = new TextView(getActivity());
-                    cannotComplete.setText("You cannot complete this \n please\n don't");
-                    cannotComplete.setTextColor(0xffffffff);
-                    itemInfo.addView(cannotComplete,itemInfo.getChildCount());
-                    itemInfo.setVisibility(View.VISIBLE);
-                    break;
-                }
-
-                TextView duration = new TextView(getActivity());
-                duration.setText("This trajectory will take "+days+" day"+((days>1)?"s.":"."));
-                duration.setTextColor(0xffffffff);
-                itemInfo.addView(duration,itemInfo.getChildCount());
-                Log.d(TAG,"duration: "+trajectory.getDuration());
-
-                TextView  cost = new TextView(getActivity());
-                cost.setText("It will cost " + trajectory.getMoneyCost() + " $ and " + trajectory.getFoodCost() + " food.");
-                cost.setTextColor(0xffffffff);
-                itemInfo.addView(cost,itemInfo.getChildCount());
-                Log.d(TAG,"cost: "+trajectory.getMoneyCost()+"$ "+trajectory.getFoodCost());
-
-                for(Map.Entry<String, Double> entry: trajectory.getAverageRisks().entrySet()){
-                    TextView riskTV = new TextView(getActivity());
-                    riskTV.setText("There is a "+entry.getValue()*100+"% chance of "+entry.getKey()+".");
-                    riskTV.setTextColor(0xffffffff);
-                    itemInfo.addView(riskTV,itemInfo.getChildCount());
-                }
-
-                LinearLayout ll = (LinearLayout) LayoutInflater.from(getActivity()).inflate(R.layout.sail_button_layout, null);
-                Button sailButton = (Button) ll.findViewById(R.id.button);
-                sailButton.setOnClickListener(this);
-                itemInfo.addView(ll);
-
-
-                itemInfo.setVisibility(View.VISIBLE);*/
 
         }
     }
 
-    public void sail(Trajectory t) {
+
+    //@TODO events happen once at most
+    public LinearLayout sail(Trajectory t, LinearLayout itemInfo) {
         int day = 0;
-        LinearLayout itemInfo = (LinearLayout)getView().findViewById(R.id.archipelagoItemInfo);
-        itemInfo.removeAllViews();
 
         while(day++<t.getDuration()) {
-            Globals.boat.tick();
+            Globals.boat.tick();//handled by happened when Event.SAIL ?
             Happening happened = eventler.tryEvents(t);
             if(!happened.getType().equals(Event.NOTHING_HAPPENED)) {
                 TextView outcome = new TextView(getActivity());
@@ -307,22 +244,66 @@ public class ArchipelagoFragment extends Fragment implements View.OnClickListene
         Globals.boat.getCurrentIsland().deliver();
 
 
-        relativeLayout.removeAllViews();
-        relativeLayout = addIslands(relativeLayout);
-        relativeLayout = addTrajectories(relativeLayout);
+
 
         TextView arrival = new TextView(getActivity());
         arrival.setText("You have arrived at "+t.getTo().getName());
         arrival.setTextColor(getResources().getColor(R.color.text_colour));
         itemInfo.addView(arrival,itemInfo.getChildCount());
 
-        relativeLayout.addView(itemInfo);
-
-        BMapActivity bMapActivity = (BMapActivity)getActivity();
-        bMapActivity.setBoatStats();
-        bMapActivity.setIslandName();
+        return itemInfo;
 
 
+    }
+
+    private LinearLayout setBoatInfo(Island i, LinearLayout itemInfo) {
+        LinearLayout shortDescript = (LinearLayout) LayoutInflater.from(getActivity()).inflate(R.layout.archipelago_island_short,null);
+
+        TextView islandName = (TextView) shortDescript.findViewById(R.id.islandName);
+        islandName.setText(i.getName());
+
+        TextView islandDesc = (TextView) shortDescript.findViewById(R.id.islandDescript);
+        islandDesc.setText(" is a " + i.getIndustry() + " island.");
+        itemInfo.addView(shortDescript,itemInfo.getChildCount());
+
+        if(i.getName().equals(Globals.boat.getCurrentIsland().getName())){
+            Log.d(TAG,"current island.");
+            TextView youAreHere = (TextView) new TextView(getActivity());
+            youAreHere.setText("You are here.");
+            youAreHere.setTextColor(0xffffffff);
+            itemInfo.addView(youAreHere,itemInfo.getChildCount());
+        }else{
+            Log.d(TAG,"not current island.");
+            SQLiteDatabase db = Globals.dbHelper.getReadableDatabase();
+            String selection = DbHelper.C_FILENAME+" = ? and "+DbHelper.C_DESTINATION+" = ? and "+DbHelper.C_CONTAINER+" = ?";
+            String [] selectArgs = new String[]{Globals.saveName,i.getName(),Globals.boat.getName()};
+            String [] columns = new String []{DbHelper.C_TYPE,DbHelper.C_NAME,DbHelper.C_DAYSLEFT};
+            Cursor c = db.query(DbHelper.T_PASSENGERS,columns,selection,selectArgs,null,null,DbHelper.C_DAYSLEFT+" ASC");
+            //if(!c.moveToFirst()) {Log.d(TAG,"cursor empty");break;}
+            Log.d(TAG,"passcount: "+c.getCount());
+            for(int j = 0; (j<c.getCount())&&(j<3);j++){
+                c.moveToPosition(j);
+                TextView passengerHeaded = new TextView(getActivity());
+                int columnIndex = c.getColumnIndex(DbHelper.C_TYPE);
+                String type = c.getString(columnIndex);
+                columnIndex = c.getColumnIndex(DbHelper.C_NAME);
+                String name = c.getString(columnIndex);
+                columnIndex = c.getColumnIndex(DbHelper.C_DAYSLEFT);
+                int daysLeft = c.getInt(columnIndex);
+                passengerHeaded.setText(type+" "+name+" must get there "+(daysLeft>0?"in "+daysLeft+" days.":"immediately."));
+                passengerHeaded.setTextColor(0xffffffff);
+                itemInfo.addView(passengerHeaded,itemInfo.getChildCount());
+            }
+            if(c.getCount()>4){
+                TextView manyPassengers = new TextView(getActivity());
+                manyPassengers.setText(c.getCount()+" more passengers are headed there.");
+                manyPassengers.setTextColor(0xffffffff);
+                itemInfo.addView(manyPassengers,itemInfo.getChildCount());
+            }
+            c.close();
+            db.close();
+        }
+        return itemInfo;
     }
 
     //@TODO handle lack of both
@@ -380,201 +361,40 @@ public class ArchipelagoFragment extends Fragment implements View.OnClickListene
 
     }
 
+    private AnimatorSet boatAnimator(Trajectory t, ImageView  boatView){
+        float k = (float)0.20;
+        AnimatorSet animatorSet = new AnimatorSet();
 
+        float fromx = boatView.getX();
+        float fromy = boatView.getY();
 
+        /*Log.d(TAG,"boat: "+fromx+","+fromy);*/
 
+        float tox =  (1-k)*t.getTo().getxCoord() + (k)*t.getFrom().getxCoord();
+        tox *= TILE_SIZE;
+        float toy = (1-k)*t.getTo().getyCoord() + k*t.getFrom().getyCoord();
+        toy *= TILE_SIZE;
 
+        float nextx = k*t.getTo().getxCoord() + (1-k)*t.getFrom().getxCoord();
+        nextx *= TILE_SIZE;
+        float nexty = k*t.getTo().getyCoord() + (1-k)*t.getFrom().getyCoord();
+        nexty *= TILE_SIZE;
 
+        ObjectAnimator firstR = ObjectAnimator.ofFloat(boatView,"rotation",180+(float)Math.toDegrees(Math.atan2(nexty-fromy, nextx-fromx)));
+        ObjectAnimator firstX = ObjectAnimator.ofFloat(boatView,"x",fromx,nextx);
+        ObjectAnimator firstY = ObjectAnimator.ofFloat(boatView,"y",fromy,nexty);
 
+        ObjectAnimator lastR = ObjectAnimator.ofFloat(boatView,"rotation",180+(float)Math.toDegrees(Math.atan2(toy-nexty, tox-nextx)));
+        ObjectAnimator lastX = ObjectAnimator.ofFloat(boatView,"x",nextx,tox);
+        ObjectAnimator lastY = ObjectAnimator.ofFloat(boatView,"y",nexty,toy);
 
+        animatorSet.play(firstR).before(firstX).with(firstY).before(lastR);
+        animatorSet.play(lastX).with(lastY).after(lastR);
 
+        animatorSet.setDuration(1000);
 
-
-
-
-    /////DEPRECATION LINE/////////
-    private RelativeLayout addTrajectoriesC(RelativeLayout relativeLayout){
-        SQLiteDatabase db = Globals.dbHelper.getReadableDatabase();
-        String selection = DbHelper.C_FILENAME+" = ?";//archipelago....
-        String [] selectArgs = {Globals.saveName};
-        Cursor c = db.query(DbHelper.T_TRAJECTORIES,null,selection,selectArgs,null,null,null);
-        int columnIndex;
-        if(!c.moveToFirst()){db.close();c.close(); return relativeLayout;}
-        do{
-            columnIndex = c.getColumnIndex(DbHelper.C_FROM);
-            Island from = Globals.archipelago.get(c.getString(columnIndex));
-            columnIndex = c.getColumnIndex(DbHelper.C_TO);
-            Island to = Globals.archipelago.get(c.getString(columnIndex));
-            columnIndex = c.getColumnIndex(DbHelper.C_DAYS);
-            int days = c.getInt(columnIndex);
-
-            int tox = to.getxCoord();
-            int toy = to.getyCoord();
-            int fromx = from.getxCoord();
-            int fromy = from.getyCoord();
-
-            ImageView iv = new ImageView(getActivity());
-            iv.setId(R.id.trajectory);
-
-
-            iv.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
-            int deltax = (Math.abs(tox-fromx));
-            int deltay = (Math.abs(toy-fromy));
-            Log.d(TAG,"delta: ("+deltax+","+deltay+")");
-            /*
-            double length = Math.sqrt(deltax*deltax+deltay*deltay);
-            Log.d(TAG,"length: "+length);
-            RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams((int)length, 50);
-            double width = layoutParams.height;
-            layoutParams.topMargin = (int)((TILE_SIZE*(fromy+toy+1)-width)/2);
-            layoutParams.leftMargin = (int)((TILE_SIZE*(fromx+tox+1)-length)/2);*/
-
-            int image_width=(int)(TILE_SIZE*(getDistance(0,0,deltax,deltay)-Math.sqrt(2)/1.7));
-            int image_height= 15;
-            int topMargin=(TILE_SIZE*(toy+fromy+1)-image_height)/2;
-            int leftMargin=(TILE_SIZE*(tox+fromx+1)-image_width)/2;
-            RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(image_width, image_height);
-            Log.d(TAG,"topmargin: "+topMargin+" leftmargin: "+leftMargin);
-            layoutParams.topMargin = topMargin;
-            layoutParams.leftMargin = leftMargin;
-            //Log.d(TAG,"topmargin: "+((RelativeLayout.LayoutParams)(iv.getLayoutParams())).topMargin+" leftmargin: "+((RelativeLayout.LayoutParams)(iv.getLayoutParams())).leftMargin);
-            iv.setLayerType(View.LAYER_TYPE_SOFTWARE, null);//needed for dashed line to work properly
-            iv.setRotation((float) Math.toDegrees(Math.atan2(deltay, deltax)));
-            //iv.setRotation(45);
-            iv.setLayoutParams(layoutParams);
-
-            if(Globals.boat.getCurrentIsland().getName().equals(from.getName())||Globals.boat.getCurrentIsland().getName().equals(to.getName())){
-                /*Trajectory trajectory = Eventler.getTrajectory(new Point(fromx,fromy),new Point(tox,toy));
-                iv.setTag(trajectory);*/
-                iv.setImageResource(R.drawable.dashed_line);
-                iv.setFocusable(false);
-                Log.d(TAG, "focusable: " + iv.isFocusable());
-                iv.setOnClickListener(this);
-            }else{
-                iv.setImageResource(R.drawable.dashed_line);
-            }
-            relativeLayout.addView(iv);
-
-        }while(c.moveToNext());
-        c.close();
-        db.close();
-        return relativeLayout;
-
+        return animatorSet;
     }
 
-    private RelativeLayout addTrajectoriesB(RelativeLayout relativeLayout){
-        SQLiteDatabase db = Globals.dbHelper.getReadableDatabase();
-        final String FROM_ISLAND = "islandFrom";
-        final String TO_ISLAND = "islandTo";
-        final String C_TO_X = "fromx";
-        final String C_TO_Y = "fromy";
-        final String C_FROM_X = "tox";
-        final String C_FROM_Y = "toy";
-        String query = "SELECT "
-                +TO_ISLAND+"."+DbHelper.C_X+" as "+C_TO_X+", "
-                +TO_ISLAND+"."+DbHelper.C_Y+" as "+C_TO_Y+", "
-                +FROM_ISLAND+"."+DbHelper.C_X+" as "+C_FROM_X+", "
-                +FROM_ISLAND+"."+DbHelper.C_Y+" as "+C_FROM_Y+", "
-                +FROM_ISLAND+"."+DbHelper.C_Y+" as "+C_FROM_Y+", "
-                +FROM_ISLAND+"."+DbHelper.C_NAME+" as "+DbHelper.C_NAME+", "
-                +DbHelper.T_TRAJECTORIES+"."+DbHelper.C_DAYS+" as "+DbHelper.C_DAYS
-                +" FROM " + DbHelper.T_TRAJECTORIES
-                +" JOIN "+DbHelper.T_ISLANDS+" as "+FROM_ISLAND+" ON "+FROM_ISLAND+"."+DbHelper.C_NAME+" = "+DbHelper.T_TRAJECTORIES+"."+DbHelper.C_FROM
-                +" JOIN "+DbHelper.T_ISLANDS+" as "+TO_ISLAND+" ON "+TO_ISLAND+"."+DbHelper.C_NAME+" = "+DbHelper.T_TRAJECTORIES+"."+DbHelper.C_TO
-                +" WHERE "+DbHelper.T_TRAJECTORIES+"."+DbHelper.C_FILENAME+" = ?";
-        String [] selectArgs = {Globals.saveName};
-        Cursor c = db.rawQuery(query,selectArgs);
-        if(!c.moveToFirst()){db.close();c.close(); return relativeLayout;}
-        int columnIndex;
-        do {
-            columnIndex = c.getColumnIndex(C_TO_X);
-            int tox = c.getInt(columnIndex);
-            columnIndex = c.getColumnIndex(C_TO_Y);
-            int toy = c.getInt(columnIndex);
-            columnIndex = c.getColumnIndex(C_FROM_X);
-            int fromx = c.getInt(columnIndex);
-            columnIndex = c.getColumnIndex(C_FROM_Y);
-            int fromy = c.getInt(columnIndex);
-            columnIndex = c.getColumnIndex(DbHelper.C_NAME);
-            String fromName = c.getString(columnIndex);
-            columnIndex = c.getColumnIndex(DbHelper.C_DAYS);
-            int days = c.getInt(columnIndex);
-            Log.d(TAG,"tilesize "+TILE_SIZE);
-            Log.d(TAG,"("+fromx+","+fromy+") to ("+tox+","+toy+")");
 
-            ImageView iv = new ImageView(getActivity());
-            if(fromName.equals(Globals.boat.getCurrentIsland().getName())){
-                iv.setImageResource(R.drawable.dashed_line);
-                //setonclicklistener
-            }else{
-                iv.setImageResource(R.drawable.dashed_line);
-            }
-            iv.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
-            int deltax = (Math.abs(tox-fromx));
-            int deltay = (Math.abs(toy-fromy));
-            Log.d(TAG,"delta: ("+deltax+","+deltay+")");
-            /*
-            double length = Math.sqrt(deltax*deltax+deltay*deltay);
-            Log.d(TAG,"length: "+length);
-            RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams((int)length, 50);
-            double width = layoutParams.height;
-            layoutParams.topMargin = (int)((TILE_SIZE*(fromy+toy+1)-width)/2);
-            layoutParams.leftMargin = (int)((TILE_SIZE*(fromx+tox+1)-length)/2);*/
-
-            int image_width=(int)(TILE_SIZE*(getDistance(0,0,deltax,deltay)-Math.sqrt(2)/1.7));
-            int image_height= 15;
-            int topMargin=(TILE_SIZE*(toy+fromy+1)-image_height)/2;
-            int leftMargin=(TILE_SIZE*(tox+fromx+1)-image_width)/2;
-            RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(image_width, image_height);
-            Log.d(TAG,"topmargin: "+topMargin+" leftmargin: "+leftMargin);
-            layoutParams.topMargin = topMargin;
-            layoutParams.leftMargin = leftMargin;
-            //Log.d(TAG,"topmargin: "+((RelativeLayout.LayoutParams)(iv.getLayoutParams())).topMargin+" leftmargin: "+((RelativeLayout.LayoutParams)(iv.getLayoutParams())).leftMargin);
-            iv.setLayerType(View.LAYER_TYPE_SOFTWARE, null);//needed for dashed line to work properly
-            iv.setRotation((float) Math.toDegrees(Math.atan2(deltay, deltax)));
-            //iv.setRotation(45);
-            iv.setTag(days);
-            iv.setLayoutParams(layoutParams);
-            Log.d(TAG,"topmargin: "+((RelativeLayout.LayoutParams)(iv.getLayoutParams())).topMargin+" leftmargin: "+((RelativeLayout.LayoutParams)(iv.getLayoutParams())).leftMargin);
-            relativeLayout.addView(iv);
-        }while(c.moveToNext());
-        return relativeLayout;
-    }
-
-    private RelativeLayout addIslandsB(RelativeLayout relativeLayout) {
-        SQLiteDatabase db = Globals.dbHelper.getReadableDatabase();
-        String selection = DbHelper.C_FILENAME + "= ? ";//+ DbHelper.C_ARCHIPELAGO + ' = ?"
-        String [] selectArgs = new String[]{Globals.saveName};
-        Cursor c = db.query(DbHelper.T_ISLANDS,null,selection,selectArgs,null,null,null);
-        if(!c.moveToFirst()){db.close();c.close(); return relativeLayout;}
-        int columnIndex;
-        do{
-            columnIndex = c.getColumnIndex(DbHelper.C_NAME);
-            String name = c.getString(columnIndex);
-            columnIndex = c.getColumnIndex(DbHelper.C_X);
-            int x = c.getInt(columnIndex);
-            columnIndex = c.getColumnIndex(DbHelper.C_Y);
-            int y = c.getInt(columnIndex);
-            columnIndex = c.getColumnIndex(DbHelper.C_INDUSTRY);
-            String industry = c.getString(columnIndex);
-
-            Island i = new Island(name,x,y,industry);
-
-            ImageView iv = new ImageView(getActivity());
-            iv.setImageResource(R.drawable.green);///@TODO add correct island image
-            iv.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
-            iv.setTag(i);
-            RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(TILE_SIZE,TILE_SIZE);
-            layoutParams.topMargin = y*TILE_SIZE;
-            layoutParams.leftMargin = x*TILE_SIZE;
-            iv.setLayoutParams(layoutParams);
-            Log.d(TAG,"topmargin: "+((RelativeLayout.LayoutParams)(iv.getLayoutParams())).topMargin+" leftmargin: "+((RelativeLayout.LayoutParams)(iv.getLayoutParams())).leftMargin);
-            relativeLayout.addView(iv);
-        }while(c.moveToNext());
-        c.close();
-        db.close();
-
-        return relativeLayout;
-
-    }
 }

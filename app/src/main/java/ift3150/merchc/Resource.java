@@ -8,6 +8,17 @@ import java.util.Map;
  */
 public class Resource extends Cargo {
 
+    static final String [] foodTypes = {"coconut","fish"};
+
+    @Override
+    public int getVolume() {
+        return volume*amount;
+    }
+
+    @Override
+    public int getWeight() {
+        return weight*amount;
+    }
 
     public Resource(String type){
         this(type,1);
@@ -26,13 +37,13 @@ public class Resource extends Cargo {
     protected void inflate(String type){
         switch (type){
             case "metal" : weight = 5; volume = 1;break;
-            case "fish" : weight = 2; volume = 3;break;
-            case "food" : weight = 1; volume = 4;break;
-            case "coconut" : weight = 3; volume = 2;break;
-            case "water" : weight = 4; volume = 1;break;
-            case "wood" : weight = 3; volume = 2; break;
-            case "booze" : weight = 4; volume = 1;break;
-            case "tobacco" : weight = 2; volume = 1;break;
+            case "fish" : weight = 1; volume = 1;break;
+            case "food" : weight = 1; volume = 1;break;
+            case "coconut" : weight = 1; volume = 2;break;
+            case "water" : weight = 1; volume = 1;break;
+            case "wood" : weight = 3; volume = 1; break;
+            case "booze" : weight = 2; volume = 1;break;
+            case "tobacco" : weight = 1; volume = 2;break;
 
         }
 

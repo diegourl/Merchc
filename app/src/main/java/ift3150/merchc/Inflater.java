@@ -26,6 +26,7 @@ Note that there are two separate inflater objects created by LA: one for the boa
 */
 public class Inflater {
     private static final String TAG = "Inflater";
+    private int islandImageIndex = 1;
 
 
     //private File file; // not right. or maybe.
@@ -54,7 +55,7 @@ public class Inflater {
     }
 
     public  void inflateIsland(String name, int x, int y, String industry){
-        Island island = new Island(name,x,y,industry);
+        Island island = new Island(name,x,y,industry,null);
         //DbHelper.write(saveName, name, x, y, industry);
 
         //ContentValues is a name-value pair data structure which we then shove into the db
@@ -66,6 +67,8 @@ public class Inflater {
         values.put(DbHelper.C_Y, y);
         values.put(DbHelper.C_INDUSTRY, industry);
         values.put(DbHelper.C_ARCHIPELAGO,currentArchipelago);
+        values.put(DbHelper.C_IMAGE,"island_fatter"+islandImageIndex++);
+        islandImageIndex %= Island.ISLAND_IMAGES;
         db.insertOrThrow(DbHelper.T_ISLANDS, null, values);
 
         //Provisional save into map
@@ -265,10 +268,10 @@ public class Inflater {
     public void setContainerName(String containerName){
         this.containerName = containerName;
     }
-
+/*
     public Map<String, Island> getMap() {return map;}
 
-    public Boat getBoat() { return boat; }
+    public Boat getBoat() { return boat; }*/
 
     public void closeDB() { db.close();   }
 

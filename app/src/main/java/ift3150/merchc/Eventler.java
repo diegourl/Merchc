@@ -34,8 +34,9 @@ public class Eventler {
         Log.d(TAG,"distance: "+distance);
         trajectory.setFeasible(distance<FEASIBILITY_LIMIT);
 
-        //@TODO factor in wind
-        int duration = (int)(distance/Globals.boat.getSpeed())+1;
+        double speed = Globals.boat.getSpeed(wind.getSpeed(from.getxCoord(),from.getyCoord(),to.getxCoord(),to.getyCoord()))+1;
+        Log.d(TAG, "actual speed: "+speed);
+        int duration = (int)(distance/speed +1);
         trajectory.setDuration(duration);
         SQLiteDatabase db = Globals.dbHelper.getReadableDatabase();
 
@@ -97,7 +98,7 @@ public class Eventler {
 
     }
 
-    private class Wind{
+    public class Wind{
         private final static double INIT = 10;
         private final static double INCR = 5;
         double x;
@@ -114,6 +115,11 @@ public class Eventler {
         public void tick(){
             x += INCR*Math.random()-INCR/2;
             y += INCR*Math.random()-INCR/2;
+        }
+
+        public double getSpeed(double x1, double y1, double x2, double y2){
+            double norm2 = Math.pow(x2-x1,2)+Math.pow(y2-y1,2);
+            return (x*(x2-x1)+y*(y2-y1))/norm2;
         }
     }
 }

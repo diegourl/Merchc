@@ -18,6 +18,8 @@ public class Event {
     public static final String NOTHING_HAPPENED = "nothing happened";
     public static final String PIRATE_ATTACK = "pirate attack";
     public static final String STORM = "storm";
+    public static final String MONEY_SHORTAGE = "money shortage";
+    public static final String FOOD_SHORTAGE = "food shortage";
 
     public Event(String type){
         this.type = type;

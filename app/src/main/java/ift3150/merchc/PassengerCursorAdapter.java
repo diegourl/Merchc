@@ -64,7 +64,8 @@ public class PassengerCursorAdapter extends SimpleCursorAdapter implements View.
         tvType.setText(type);
         columnIndex = cursor.getColumnIndex(DbHelper.C_NAME);
         String name = cursor.getString(columnIndex);
-        tvName.setText(name);
+        //tvName.setText(name);
+        tvName.setText("");
         columnIndex = cursor.getColumnIndex(DbHelper.C_DESTINATION);
         String destination = cursor.getString(columnIndex);
         tvDestination.setText(destination);
@@ -121,7 +122,6 @@ public class PassengerCursorAdapter extends SimpleCursorAdapter implements View.
                     values.put(DbHelper.C_CONTAINER,Globals.boat.getCurrentIsland().getName());
                     Globals.boat.addWeight(-p.getWeight());
                     Globals.boat.addVolume(-p.getVolume());
-                    Globals.boat.addMoney(-p.getFee()); //@TODO upgrade this
                     /*b.setTag(R.id.passengerButton,Globals.boat.getCurrentIsland().getName());
                     b.setText(BOARD_BUTTON_TEXT);*/
                 }else{

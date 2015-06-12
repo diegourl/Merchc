@@ -20,21 +20,9 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".LoadingActivity"
-            android:label="@string/title_activity_loading" >
-        </activity>
-        <activity
             android:name=".IslandActivity"
             android:label="@string/title_activity_island"
             android:screenOrientation="portrait" >
-        </activity>
-        <activity
-            android:name=".SimulationActivity"
-            android:label="@string/title_activity_simulation" >
-        </activity>
-        <activity
-            android:name=".MapActivity"
-            android:label="@string/title_activity_map" >
         </activity>
         <activity
             android:name=".BMapActivity"
