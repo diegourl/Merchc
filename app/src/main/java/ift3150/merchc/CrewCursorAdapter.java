@@ -9,6 +9,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -43,6 +44,7 @@ public class CrewCursorAdapter extends SimpleCursorAdapter implements View.OnCli
         }
 
         //get views
+        ImageView iv = (ImageView) row.findViewById(R.id.crewImage);
         TextView tvType = (TextView) row.findViewById(R.id.crewType);
         TextView tvName = (TextView) row.findViewById(R.id.crewName);
         TextView tvUpkeep = (TextView) row.findViewById(R.id.crewUpkeep);
@@ -60,6 +62,7 @@ public class CrewCursorAdapter extends SimpleCursorAdapter implements View.OnCli
         columnIndex = cursor.getColumnIndex(DbHelper.C_TYPE);
         String type = cursor.getString(columnIndex);
         tvType.setText(type);
+        iv.setImageResource(iv.getContext().getResources().getIdentifier("drawable/portrait_crew_" + type, null, iv.getContext().getPackageName()));
         columnIndex = cursor.getColumnIndex(DbHelper.C_NAME);
         String name = cursor.getString(columnIndex);
         //tvName.setText(name);

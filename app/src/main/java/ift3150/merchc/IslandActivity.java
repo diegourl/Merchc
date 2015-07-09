@@ -31,7 +31,7 @@ import java.util.Map;
 
 public class IslandActivity extends FragmentActivity {
     private static final String TAG = "IslandActivity";
-    private static final int NUM_TABS = 4;
+    private static final int NUM_TABS = 5;
     DbHelper dbHelper;
     SQLiteDatabase db;
     ArrayList<Island> neighbours;
@@ -57,6 +57,7 @@ public class IslandActivity extends FragmentActivity {
         viewPager = (ViewPager) findViewById(R.id.pager);
         //viewPager.setOffscreenPageLimit(NUM_TABS-1);
         viewPager.setAdapter(fpAdapter);
+        viewPager.setCurrentItem(1);
         setIslandName();
         setBoatStats();
 

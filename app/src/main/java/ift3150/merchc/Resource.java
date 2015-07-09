@@ -9,6 +9,7 @@ import java.util.Map;
 public class Resource extends Cargo {
 
     static final String [] foodTypes = {"coconut","fish"};
+    enum rType{metal, fish, coconut, water, wood, booze, tobacco};
 
     @Override
     public int getVolume() {

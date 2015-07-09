@@ -26,21 +26,32 @@ public class FPAdapter extends FragmentPagerAdapter {
     public CharSequence getPageTitle(int position) {
         String s;
         switch (position){
-            case 1: s =  "crew"; break;
-            case 2: s= "resources"; break;
-            case 3: s= "equipment"; break;
+            case 2: s =  "crew"; break;
+            case 3: s= "resources"; break;
+            case 4: s= "equipment"; break;
+            case 0: s= "boat"; break;
             default: s= "passengers"; break;
         }
-        return s;
-        /*s = " " + s;
+        int id;
+        switch (position){
+            case 2: id =  R.drawable.tab_crew; break;
+            case 3: id =  R.drawable.tab_ressources; break;
+            case 4: id =  R.drawable.tab_equipment; break;
+            case 0: id =  R.drawable.tab_boat; break;
+            default: id =  R.drawable.tab_passengers; break;
+        }
+
+        Drawable drawable = context.getResources().getDrawable( id);
+        double dpfactor = context.getResources().getDisplayMetrics().density;
+        drawable.setBounds(0, 0,(int)( 30*dpfactor), (int)(30*dpfactor));
+        s = "  " + s;
         SpannableStringBuilder sb = new SpannableStringBuilder(s); // space added before text for convenience
 
-        Drawable drawable = context.getResources().getDrawable( R.mipmap.ic_launcher );
-        drawable.setBounds(0, 0, drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight());
+
         ImageSpan span = new ImageSpan(drawable, ImageSpan.ALIGN_BASELINE);
         sb.setSpan(span, 0, 1, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
 
-        return sb;*/
+        return sb;
     }
 
     SQLiteDatabase db;
@@ -75,7 +86,7 @@ public class FPAdapter extends FragmentPagerAdapter {
 
         switch(i){
 
-            case 1:
+            case 2:
                 fragment = new CustomListFragment();
                 columns = new String[]{DbHelper.C_TYPE,DbHelper.C_NAME,DbHelper.C_UPKEEP,DbHelper.C_SALARY,DbHelper.C_WEIGHT,DbHelper.C_VOLUME};
                 to = new int[]{R.id.crewType,R.id.crewName,R.id.crewUpkeep,R.id.crewSalary,R.id.crewWeight,R.id.crewVolume};//changed
@@ -93,7 +104,7 @@ public class FPAdapter extends FragmentPagerAdapter {
                     fragment.setListAdapter(simpleAdapter);*/
                 break;
 
-            case 2:
+            case 3:
                 fragment = new CustomListFragment();
                 columns = new String[]{DbHelper.C_TYPE,DbHelper.C_CONTAINER,DbHelper.C_CONTAINER};//usless?
                 to = new int[]{R.id.resourceType,R.id.resourceBoatAmount,R.id.resourceIslandAmount};//useless
@@ -105,7 +116,7 @@ public class FPAdapter extends FragmentPagerAdapter {
                 fragment.setListAdapter(resourceCursorAdapter);
                 break;
 
-            case 3:
+            case 4:
                 fragment = new CustomListFragment();
                 columns = new String[]{DbHelper.C_TYPE,DbHelper.C_CONTAINER,DbHelper.C_CONTAINER};//usless?
                 to = new int[]{R.id.equipmentType,R.id.equipmentBoatAmount,R.id.equipmentIslandAmount};//useless
@@ -116,6 +127,11 @@ public class FPAdapter extends FragmentPagerAdapter {
                 EquipmentCursorAdapter equipmentCursorAdapter = new EquipmentCursorAdapter(context,R.layout.row_equipment,cursor, columns, to, 0);
                 fragment.setListAdapter(equipmentCursorAdapter);
                 break;
+
+            case 0:
+
+                return new BoatStatusFragment();
+
 
             default :
                 fragment = new CustomListFragment();

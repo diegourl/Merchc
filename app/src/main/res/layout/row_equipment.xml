@@ -10,8 +10,9 @@
 
 
         <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:scaleType="fitCenter"
             android:id="@+id/equipmentImage"
             android:layout_margin="5dp" />
 

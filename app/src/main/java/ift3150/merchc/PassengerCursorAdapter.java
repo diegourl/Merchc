@@ -10,6 +10,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -45,6 +47,7 @@ public class PassengerCursorAdapter extends SimpleCursorAdapter implements View.
         }
         
         //get views
+        ImageView iv = (ImageView) row.findViewById(R.id.passengerImage);
         TextView tvType = (TextView) row.findViewById(R.id.passengerType);
         TextView tvName = (TextView) row.findViewById(R.id.passengerName);
         TextView tvDestination = (TextView) row.findViewById(R.id.passengerDestination);
@@ -62,6 +65,9 @@ public class PassengerCursorAdapter extends SimpleCursorAdapter implements View.
         columnIndex = cursor.getColumnIndex(DbHelper.C_TYPE);
         String type = cursor.getString(columnIndex);
         tvType.setText(type);
+        iv.setImageResource(iv.getContext().getResources().getIdentifier("drawable/portrait_passenger_" + type, null, iv.getContext().getPackageName()));
+        /*iv.setScaleType(ImageView.ScaleType.FIT_CENTER);
+        iv.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));*/
         columnIndex = cursor.getColumnIndex(DbHelper.C_NAME);
         String name = cursor.getString(columnIndex);
         //tvName.setText(name);

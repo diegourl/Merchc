@@ -9,6 +9,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -52,6 +53,7 @@ public class ResourceCursorAdapter extends SimpleCursorAdapter implements View.O
         }
 
         TextView tvType = (TextView) row.findViewById(R.id.resourceType);
+        ImageView iv = (ImageView) row.findViewById(R.id.resourceImage);
         TextView tvWeight = (TextView) row.findViewById(R.id.resourceWeight);
         TextView tvVolume = (TextView) row.findViewById(R.id.resourceVolume);
         TextView tvBoatAmount = (TextView) row.findViewById(R.id.resourceBoatAmount);
@@ -87,6 +89,7 @@ public class ResourceCursorAdapter extends SimpleCursorAdapter implements View.O
         previousType = cursor.getString(columnIndex);
         Log.d(TAG, previousType);
         Resource r = new Resource(previousType);
+        iv.setImageResource(iv.getContext().getResources().getIdentifier("drawable/portrait_resource_" + r.getType(), null, iv.getContext().getPackageName()));
         tvType.setText(r.getType());
 
 

@@ -1,5 +1,6 @@
 package ift3150.merchc;
 
+import android.animation.Animator;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.app.Fragment;
@@ -203,21 +204,53 @@ public class ArchipelagoFragment extends Fragment implements View.OnClickListene
 
                 Log.d(TAG,"sail clicked.");
                 Trajectory t = (Trajectory) v.getTag();
-                itemInfo = sail(t, itemInfo);
-                RelativeLayout trajectoryLayout = (RelativeLayout) relativeLayout.findViewById(R.id.trajectoryLayout);
-                trajectoryLayout.removeAllViews();
-                trajectoryLayout = addTrajectories(trajectoryLayout);
+                itemInfo.setVisibility(View.INVISIBLE);
+                final LinearLayout sailItemInfo = sail(t, itemInfo);
+                final RelativeLayout trajectoryLayout = (RelativeLayout) relativeLayout.findViewById(R.id.trajectoryLayout);
+                /*trajectoryLayout.removeAllViews();
+                trajectoryLayout = addTrajectories(trajectoryLayout);*/
 
                 ImageView boatView = (ImageView)relativeLayout.findViewById(R.id.boat);
 
-                (boatAnimator(t,boatView)).start();
+                Animator animator = (boatAnimator(t, boatView));
+                animator.addListener(new Animator.AnimatorListener() {
+                    RelativeLayout tl = trajectoryLayout;
+                    @Override
+                    public void onAnimationStart(Animator animation) {
+
+                    }
+
+                    @Override
+                    public void onAnimationEnd(Animator animation) {
+                        tl.removeAllViews();
+                        tl = addTrajectories(tl);
+                        BMapActivity bMapActivity = (BMapActivity)getActivity();
+                        bMapActivity.setBoatStats();
+                        bMapActivity.setIslandName();
+                        sailItemInfo.startAnimation(AnimationUtils.loadAnimation(getActivity(),R.anim.slide_up));
+                        sailItemInfo.setVisibility(View.VISIBLE);
+
+
+                    }
+
+                    @Override
+                    public void onAnimationCancel(Animator animation) {
+
+                    }
+
+                    @Override
+                    public void onAnimationRepeat(Animator animation) {
+
+                    }
+                });
+                animator.start();
                 Log.d(TAG,"boat: "+boatView.getX()+","+boatView.getY());
 
-                BMapActivity bMapActivity = (BMapActivity)getActivity();
+                /*BMapActivity bMapActivity = (BMapActivity)getActivity();
                 bMapActivity.setBoatStats();
-                bMapActivity.setIslandName();
+                bMapActivity.setIslandName();*/
 
-                itemInfo.startAnimation(AnimationUtils.loadAnimation(getActivity(),R.anim.slide_up));
+                //itemInfo.startAnimation(AnimationUtils.loadAnimation(getActivity(),R.anim.slide_up));
                 break;
 
         }
@@ -313,6 +346,15 @@ public class ArchipelagoFragment extends Fragment implements View.OnClickListene
         int foodCost = trajectory.getFoodCost();
 
         Log.d(TAG, "duration: "+days+"  cost: "+moneyCost+"$ "+foodCost+" food.");
+
+        if(Globals.boat.understaffed()){
+            TextView understaffed = new TextView(getActivity());
+            understaffed.setText("You're understaffed and cannot set sail.");
+            understaffed.setTextColor(getResources().getColor(R.color.text_colour));
+            linearLayout.addView(understaffed,linearLayout.getChildCount());
+            return linearLayout;
+
+        }
         if(moneyCost>Globals.boat.getMoney()){
             TextView lackOfMoney = new TextView(getActivity());
             lackOfMoney.setText("You don't have enough money to complete this trajectory.\n" +

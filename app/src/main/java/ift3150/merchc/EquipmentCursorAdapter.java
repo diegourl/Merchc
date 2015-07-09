@@ -9,6 +9,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -52,6 +53,7 @@ public class EquipmentCursorAdapter extends SimpleCursorAdapter implements View.
         }
 
         TextView tvType = (TextView) row.findViewById(R.id.equipmentType);
+        ImageView iv = (ImageView) row.findViewById(R.id.equipmentImage);
         TextView tvWeight = (TextView) row.findViewById(R.id.equipmentWeight);
         TextView tvVolume = (TextView) row.findViewById(R.id.equipmentVolume);
         TextView tvBoatAmount = (TextView) row.findViewById(R.id.equipmentBoatAmount);
@@ -84,6 +86,7 @@ public class EquipmentCursorAdapter extends SimpleCursorAdapter implements View.
         Log.d(TAG, previousType);
         Equipment e = new Equipment(previousType);
         tvType.setText(e.getType());
+        iv.setImageResource(iv.getContext().getResources().getIdentifier("drawable/portrait_equipment_" + e.getType(), null, iv.getContext().getPackageName()));
 
 
         //fetch and set equipment weight

@@ -240,4 +240,18 @@ public class Boat extends Container{
     public int getMaxRepair(){return MAX_REPAIR;}
 
 
+    public boolean understaffed() {
+        SQLiteDatabase db = Globals.dbHelper.getReadableDatabase();
+        final String C_COUNT = "count";
+
+        String query = "select count(*) as "+C_COUNT+" from "+DbHelper.T_CREW+" where "+DbHelper.C_FILENAME+" = ? and "+DbHelper.C_CONTAINER+" = ? and "+DbHelper.C_TYPE+" = ?";
+        String [] selectArgs = {Globals.saveName,name,"sailor"};
+        Cursor c = db.rawQuery(query, selectArgs);
+
+        if(!c.moveToFirst()){c.close();db.close();return true;}
+        int columnIndex = c.getColumnIndex(C_COUNT);
+        int crew = c.getInt(columnIndex);
+
+        return crew<minCrew;
+    }
 }
